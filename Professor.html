@@ -13,7 +13,7 @@
     <!-- Brower tab Title -->
     <title>Bidirectional AI-Software Engineering Lab</title>
     <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="utils/style.css">
     <!-- Font Awesome (for icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Fonts -->
@@ -21,33 +21,34 @@
 </head>
 
 <body>
-    <!-- [상단 헤더 영역 (Header)] -->
+    <!-- [Header] -->
     <div id="header-placeholder"></div>
 
-    <!-- [교수님 소개 섹션 (PI Section)] -->
-    <section class="section" id="professor"> <!-- id 추가됨: 여기로 이동 -->
+    <!-- [PI Section] -->
+    <section class="section" id="professor">
         <div class="container">
             <h1 data-lang-kr="교수" data-lang-en="Principal Investigator">교수</h1>
 
-            <!-- 교수님 사진 및 소개 -->
+            <!-- 교수진 소개 -->
             <div style="display: flex; gap: 3rem; align-items: start; margin-top: 2rem; flex-wrap: wrap;">
+
+                <!-- 교수 사진 -->
                 <img src="members/Kisubkim.jpeg" alt="Prof. Kisub Kim"
                     style="width: 200px; height: 250px; object-fit: cover; border-radius: var(--radius-lg); flex-shrink: 0;">
 
+                <!-- 교수 기본정보 -->
                 <div>
-
-                    <!-- 교수님 정보 -->
                     <h2 style="margin-bottom: 0.5rem;" data-lang-kr="김기섭 교수" data-lang-en="Prof. Kisub Kim">김기섭 교수
                     </h2>
                     <p style="color: var(--color-accent); margin-bottom: 1rem; font-weight: 600;">Assistant Professor @
                         DGIST
                     </p>
 
-                    <!-- 교수님 소개말 -->
+                    <!-- 소개글 -->
                     <div class="lang-kr">
                         <p style="color: var(--color-text-muted); max-width: 600px; margin-bottom: 1rem;">
-                            소프트웨어 공학의 동적인 환경 속에서 AI4SE, SE4AI, Data4AI의 흥미로운 영역을 탐구하고 있습니다.
-                            주요 연구 분야는 소스 코드 생성, 검색, 리뷰, 표현 학습, 그리고 버그 및 문제 해결 등입니다.
+                            소프트웨어 공학의 역동적인 환경 속에서 저는 AI4SE, SE4AI, Data4AI의 흥미로운 영역을 탐구하고 있습니다.
+                            주요 연구 분야는 소스 코드 생성, 검증, 리뷰, 구현, 그리고 버그 및 문제 해결을 위한 접근 방식에 중점을 두고 있습니다.
                         </p>
                     </div>
                     <div class="lang-en" style="display: none;">
@@ -59,7 +60,7 @@
                         </p>
                     </div>
 
-                    <!-- 소셜 링크-->
+                    <!-- social links -->
                     <div class="social-links">
                         <!-- Email -->
                         <a href="mailto:kisub.kim@dgist.ac.kr"><i class="fas fa-envelope"></i></a>
@@ -78,7 +79,7 @@
                         <a href="#" target="_blank"><i class="fab fa-threads"></i></a>
                     </div>
 
-                    <!-- 학술 링크-->
+                    <!-- academic links -->
                     <div class="academic-links">
                         <!-- Google Scholar -->
                         <a href="https://scholar.google.com/citations?user=Nr_IDzQAAAAJ&hl=en" target="_blank"><i
@@ -93,7 +94,7 @@
                 </div>
             </div>
 
-            <!-- 구분선 -->
+            <!-- 구분-->
             <hr style="margin: 3rem 0; border: none; border-top: 1px solid var(--color-border);">
 
             <!-- 1. 학력 -->
@@ -104,15 +105,15 @@
 
                     <!-- 박사 과정 -->
                     <li class="lang-kr">
-                        <strong>박사 (PhD)</strong>, 컴퓨터 과학,
+                        <strong>박사 (PhD)</strong>, 컴퓨??과학,
                         <a href="https://www.uni.lu/" target="_blank"
                             style="color: inherit; text-decoration: underline;">룩셈부르크 대학교 (University of
                             Luxembourg)</a>,
                         2017년 8월 ~ 2021년 7월
                         <ul
                             style="margin-left: 1.5rem; list-style-type: disc; color: var(--color-text-muted); font-size: 0.95rem;">
-                            <li>학위 논문: Steps Towards Semantic Code Search</li>
-                            <li>지도 교수: Tegawendé F. Bissyandé 교수 (주 지도교수), 김동선 교수(공동 부 지도교수), Yves Le Traon 교수(공동 부
+                            <li>?위 ?문: Steps Towards Semantic Code Search</li>
+                            <li>지??교수: Tegawendé F. Bissyandé 교수 (지도 교수), 김동선 교수(공동 부 지도교수), Yves Le Traon 교수(공동 부
                                 지도교수), Jacques Klein 교수(공동 부 지도교수)</li>
                         </ul>
                     </li>
@@ -152,14 +153,14 @@
 
                     <!-- 석사 과정 -->
                     <li style="margin-top: 1rem;" class="lang-kr">
-                        <strong>공학 석사</strong>, 컴퓨터 공학,
+                        <strong>공학 석사</strong>, 컴퓨??공학,
                         <a href="https://www.cbnu.ac.kr/" target="_blank"
                             style="color: inherit; text-decoration: underline;">충북대학교 (CBNU)</a>,
                         2015년 3월 ~ 2017년 2월
                         <ul
                             style="margin-left: 1.5rem; list-style-type: disc; color: var(--color-text-muted); font-size: 0.95rem;">
                             <li>학위 논문: Source Code Search for Semantically Similar Functionalities</li>
-                            <li>지도 교수: 정우성 교수</li>
+                            <li>지도교수: 정우성 교수</li>
                         </ul>
                     </li>
                     <li style="margin-top: 1rem;" class="lang-en" style="display: none;">
@@ -178,13 +179,13 @@
 
                     <!-- 학사 과정 -->
                     <li style="margin-top: 1rem;" class="lang-kr">
-                        <strong>공학 학사</strong>, 컴퓨터 공학,
+                        <strong>공학 학사</strong>, 컴퓨??공학,
                         <a href="https://www.cbnu.ac.kr/" target="_blank"
                             style="color: inherit; text-decoration: underline;">충북대학교 (CBNU)</a>,
                         2007년 3월 ~ 2014년 2월
                         <ul
                             style="margin-left: 1.5rem; list-style-type: disc; color: var(--color-text-muted); font-size: 0.95rem;">
-                            <li>지도 교수: 서영훈 교수</li>
+                            <li>지도교수: 서영훈 교수</li>
                         </ul>
                     </li>
                     <li style="margin-top: 1rem;" class="lang-en" style="display: none;">
@@ -212,7 +213,7 @@
                     <!-- unit -->
                     <li class="lang-kr">
                         <strong>조교수</strong>, <a href="https://eecs.dgist.ac.kr/" target="_blank"
-                            style="color: inherit; text-decoration: underline;">DGIST (대구경북과학기술원)</a>, 대한민국 대구, 2024 ~
+                            style="color: inherit; text-decoration: underline;">DGIST (대구경북과학기술원)</a>, 대구, 대한민국, 2024 ~
                         현재
                     </li>
                     <li class="lang-en" style="display: none;">
@@ -235,8 +236,8 @@
 
                     <!-- unit -->
                     <li style="margin-top: 0.5rem;" class="lang-kr">
-                        <strong>연구원 (Research Scientist)</strong>, <a href="https://www.smu.edu.sg/" target="_blank"
-                            style="color: inherit; text-decoration: underline;">싱가포르 경영대학 (SMU)</a>,
+                        <strong>연구원(Research Scientist)</strong>, <a href="https://www.smu.edu.sg/" target="_blank"
+                            style="color: inherit; text-decoration: underline;">싱가포르 경영대학교(SMU)</a>,
                         싱가포르, 2021년 12월 ~ 2023년 8월
                     </li>
                     <li style="margin-top: 0.5rem;" class="lang-en" style="display: none;">
@@ -247,7 +248,7 @@
 
                     <!-- unit -->
                     <li style="margin-top: 0.5rem;" class="lang-kr">
-                        <strong>연구원 (Research Associate)</strong>, <a href="https://wwwen.uni.lu/" target="_blank"
+                        <strong>연구원(Research Associate)</strong>, <a href="https://wwwen.uni.lu/" target="_blank"
                             style="color: inherit; text-decoration: underline;">룩셈부르크 대학교</a>,
                         룩셈부르크, 2021년 8월 ~ 2021년 10월
                     </li>
@@ -261,7 +262,7 @@
                     <li style="margin-top: 0.5rem;" class="lang-kr">
                         <strong>소프트웨어 개발자</strong>, <a href="https://www.khmc.or.kr/kr/main.do" target="_blank"
                             style="color: inherit; text-decoration: underline;">경희대학교 의료원</a>,
-                        대한민국 서울, 2014년 5월 ~ 2015년 2월
+                        서울특별시, 2014년 5월 ~ 2015년 2월
                     </li>
                     <li style="margin-top: 0.5rem;" class="lang-en" style="display: none;">
                         <strong>Software Developer</strong>, <a href="https://www.khmc.or.kr/kr/main.do" target="_blank"
@@ -273,7 +274,7 @@
                     <li style="margin-top: 0.5rem;" class="lang-kr">
                         <strong>연구 인턴</strong>, <a href="https://cbnu.pagaloo.com/d/ac.kr/nlp" target="_blank"
                             style="color: inherit; text-decoration: underline;">충북대학교 NLP 연구실</a>,
-                        대한민국 청주, 2013년 2월 ~ 2014년 3월
+                        청주, 대한민국, 2013년 2월 ~ 2014년 3월
                     </li>
                     <li style="margin-top: 0.5rem;" class="lang-en" style="display: none;">
                         <strong>Research Intern</strong>, <a href="https://cbnu.pagaloo.com/d/ac.kr/nlp" target="_blank"
@@ -284,8 +285,7 @@
 
                     <!-- unit -->
                     <li style="margin-top: 0.5rem;" class="lang-kr">
-                        <strong>병장 만기 전역</strong>, 대한민국 육군 국방부, 대한민국 성남, 2008년 5월
-                        ~ 2010년 4월
+                        <strong>병장 만기 전역</strong>, 국방부, 성남, 대한민국, 2008년 5월 ~ 2010년 4월
                     </li>
                     <li style="margin-top: 0.5rem;" class="lang-en" style="display: none;">
                         <strong>Sergeant</strong>, Department of Defense, Korean Army, Seongnam, South Korea, May. 2008
@@ -310,7 +310,7 @@
                 </p>
             </div>
 
-            <!-- 4. 강의 및 지도 -->
+            <!-- 4. 강의 및 지도-->
             <div style="margin-bottom: 3rem;">
                 <h2 style="font-size: 1.5rem; margin-bottom: 1rem; border-left: 5px solid var(--color-primary); padding-left: 10px;"
                     data-lang-kr="강의 및 지도" data-lang-en="Teaching and Research Guidance">Teaching and Research
@@ -352,7 +352,7 @@
                     </li>
 
                     <!-- unit -->
-                    <li style="margin-top: 0.5rem;" class="lang-kr"><strong>학위 논문 지도</strong>, 이재권 (박사),
+                    <li style="margin-top: 0.5rem;" class="lang-kr"><strong>학위 논문 지도</strong>, 이재원(박사),
                         <em>WCET and Priority Assignment Analysis of Real-Time Systems using Search and Machine
                             Learning</em>, 룩셈부르크 대학교, 2022
                     </li>
@@ -372,8 +372,8 @@
                             Development Artifact Analysis</em>, Université du Québec à Montréal, 2022</li>
 
                     <!-- unit -->
-                    <li style="margin-top: 0.5rem;" class="lang-kr"><strong>초청 강연</strong> (20명), <em>시멘틱
-                            코드 검색 개론</em>, 사반건 대학 (터키), 2022</li>
+                    <li style="margin-top: 0.5rem;" class="lang-kr"><strong>초청 강연</strong> (20명), <em>시맨틱
+                            코드 검색 개론</em>, 사반지 대학교(터키), 2022</li>
                     <li style="margin-top: 0.5rem;" class="lang-en" style="display: none;"><strong>Guest
                             Lecture</strong> (20 students),
                         <em>Introduction to Semantic Code Search</em>, Sabanci University, 2022
@@ -407,7 +407,7 @@
                     </li>
 
                     <!-- unit -->
-                    <li class="lang-kr"><strong>수업 조교</strong> (28명 평가 업무 포함), <em>소프트웨어 공학</em>,
+                    <li class="lang-kr"><strong>수업 조교</strong> (28명 평가 업무 포함), <em>소프트웨어공학</em>,
                         충북대학교, 2015</li>
                     <li class="lang-en" style="display: none;"><strong>Teaching Assistant</strong> (including assessment
                         duty for 28 students),
@@ -433,14 +433,14 @@
                 <ul style="margin-left: 1.5rem; list-style-type: disc; line-height: 1.6;">
 
                     <!-- unit -->
-                    <li class="lang-kr"><strong>프로그램 위원회 (연구 트랙)</strong>, International
+                    <li class="lang-kr"><strong>프로그램 위원회(연구 트랙)</strong>, International
                         Conference on Program Comprehension (ICPC), 2023</li>
                     <li class="lang-en" style="display: none;"><strong>Program Committee - Research Track</strong>,
                         International Conference on
                         Program Comprehension (ICPC), 2023</li>
 
                     <!-- unit -->
-                    <li class="lang-kr"><strong>프로그램 위원회 (포스트 프로시딩)</strong>, European Conference
+                    <li class="lang-kr"><strong>프로그램 위원회(후속 논문)</strong>, European Conference
                         on Software Architecture (ECSA), 2022</li>
                     <li class="lang-en" style="display: none;"><strong>Program Committee - Post Proceedings</strong>,
                         European Conference on
@@ -496,10 +496,10 @@
         </div>
     </section>
 
-    <!-- [하단 꼬리말 영역] -->
+    <!-- [footer] -->
     <div id="footer-placeholder"></div>
 
-    <script src="script.js"></script>
+    <script src="utils/script.js"></script>
 </body>
 
 </html>

@@ -13,45 +13,45 @@
     <!-- Brower tab Title -->
     <title>Bidirectional AI-Software Engineering Lab</title>
     <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="utils/style.css">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <!-- [상단 헤더 영역 (Header)] -->
+    <!-- [Header] -->
     <div id="header-placeholder"></div>
 
-    <!-- 페이지 설명 -->
+    <!-- [Research Areas] -->
     <section class="section" style="padding-bottom: 2rem;">
         <div class="container">
             <h1 data-lang-kr="연구 분야" data-lang-en="Research Areas">연구 분야</h1>
             <p style="color: var(--color-text-muted); max-width: 700px;"
-                data-lang-kr="우리는 인공지능의 다양한 하위 분야를 깊이 있게 연구하며, 특히 다음 세 가지 핵심 영역에 집중하고 있습니다."
+                data-lang-kr="연구의 다양한 하위 분야를 깊이 있게 연구하며, 특히 다음 세 가지 핵심 영역에 집중하고 있습니다."
                 data-lang-en="We conduct in-depth research in various subfields of AI, focusing particularly on the following three core areas.">
             </p>
         </div>
     </section>
 
     <!-- 
-      [연구 분야 1 (Area 1)]
-      왼쪽: 이미지 / 오른쪽: 텍스트
+      [Research Area 1]
+      Left: Image / Right: Text
     -->
     <section class="section">
         <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
-            <!-- 연구 관련 이미지 -->
+            <!-- Research Image -->
             <div style="height: 300px; background: #e2e8f0; border-radius: var(--radius-lg);"></div>
 
-            <!-- 설명 텍스트 -->
+            <!-- Research Text -->
             <div>
-                <h2 style="color: var(--color-accent);">Computer Vision</h2> <!-- 영문 타이틀 -->
-                <!-- 한/영 소제목 -->
+                <h2 style="color: var(--color-accent);">Computer Vision</h2> <!-- ?문 ??? -->
+                <!-- ?????제?-->
                 <h3 data-lang-kr="시각적 이해와 생성" data-lang-en="Visual Understanding & Generation">시각적 이해와 생성</h3>
                 <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
-                    Object Detection, Segmentation, Generative Adversarial Networks (GANs) 등 이미지와 비디오 데이터를 이해하고 생성하는
-                    알고리즘을 연구합니다.
+                    Object Detection, Segmentation, Generative Adversarial Networks (GANs) ????지? 비디???이?? ?해?고 ?성?는
+                    ?고리즘???구?니??
                 </p>
-                <!-- 세부 키워드 리스트 -->
+                <!-- ?? ?워??리스??-->
                 <ul style="padding-left: 1.2rem; color: var(--color-text-muted); list-style: disc;">
                     <li>3D Reconstruction</li>
                     <li>Medical Image Analysis</li>
@@ -61,29 +61,10 @@
         </div>
     </section>
 
-    <!-- 
-      [연구 분야 2 (Area 2)]
-      오른쪽: 이미지 / 왼쪽: 텍스트 (지그재그 배치를 위해 순서를 바꿈)
-    -->
-    <section class="section" style="background: white;">
-        <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
-            <!-- 설명 텍스트 (order: 2 로 나중에 나오게 함 -> 모바일에선 순서 조정 필요할 수 있음) -->
-            <div style="order: 2;">
-                <h2 style="color: var(--color-accent);">Natural Language Processing</h2>
-                <h3 data-lang-kr="언어 모델 및 대화 시스템" data-lang-en="Language Models & Dialogue Systems">언어 모델 및 대화 시스템</h3>
-                <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
-                    Large Language Models (LLMs), 요약, 기계 번역 등 인간의 언어를 이해하고 구사하는 모델을 개발합니다.
-                </p>
-            </div>
-            <!-- 연구 관련 이미지 -->
-            <div style="height: 300px; background: #e2e8f0; border-radius: var(--radius-lg); order: 1;"></div>
-        </div>
-    </section>
-
-    <!-- [하단 꼬리말 영역] -->
+    <!-- [footer] -->
     <div id="footer-placeholder"></div>
 
-    <script src="script.js"></script>
+    <script src="utils/script.js"></script>
 </body>
 
 </html>

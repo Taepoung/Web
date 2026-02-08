@@ -12,7 +12,7 @@ async function loadComponents() {
         // 헤더 로드
         const headerPlaceholder = document.getElementById('header-placeholder');
         if (headerPlaceholder) {
-            const response = await fetch('header.html');
+            const response = await fetch('Components/header.html');
             const text = await response.text();
             headerPlaceholder.innerHTML = text;
         }
@@ -20,7 +20,7 @@ async function loadComponents() {
         // 푸터 로드
         const footerPlaceholder = document.getElementById('footer-placeholder');
         if (footerPlaceholder) {
-            const response = await fetch('footer.html');
+            const response = await fetch('Components/footer.html');
             const text = await response.text();
             footerPlaceholder.innerHTML = text;
         }
