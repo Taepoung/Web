@@ -616,7 +616,7 @@ function createPublicationCard(item) {
 
     return `
     <div class="publication-card">
-        <div style="flex: 1;">
+        <div class="pub-content">
             <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${item.title}</h3>
             <p style="color: var(--color-text-muted); margin-bottom: 0.5rem; font-size: 0.95rem;">
                 ${authors}
@@ -625,7 +625,9 @@ function createPublicationCard(item) {
                 ${item.venue}, ${item.year} ${item.status ? `[${item.status}]` : ''}
             </p>
         </div>
-        ${linksHtml}
+        <div class="pub-links">
+            ${linksHtml}
+        </div>
     </div>
     `;
 }

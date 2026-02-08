@@ -628,19 +628,45 @@ ul {
 .publication-card {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem 2rem;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    /* 깔끔하고 둥근 프리미엄 디자인 */
+    padding: 1.2rem 2rem;
+    /* 내부 공간 확보 (더 쾌적한 가독성) */
+    transition: all 0.3s ease;
     display: flex;
-    flex-direction: row;
-    /* 가로 배열 */
-    align-items: flex-start;
-    gap: 1.5rem;
+    flex-direction: column;
+    /* 데스크탑도 수직 배열로 통일 */
+    align-items: stretch;
+    gap: 0.8rem;
     width: 100%;
     max-width: none;
     /* 너비 제한 해제하여 컨테이너 꽉 채움 */
     box-sizing: border-box;
-    margin-bottom: 1rem;
+    margin-bottom: 0.05rem;
+    /* 간격을 지금보다 절반으로 더 축소 */
+    box-shadow: var(--shadow-sm);
+    /* 아주 미세한 그림자로 고급감 부여 */
+}
+
+.pub-content {
+    flex: 1;
+    width: 100%;
+}
+
+.pub-links {
+    display: flex;
+    gap: 0.8rem;
+    flex-shrink: 0;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--color-border);
+    width: 100%;
+    justify-content: flex-start;
+}
+
+@media (max-width: 768px) {
+    .publication-card {
+        padding: 1rem 1.5rem;
+    }
 }
 
 .publication-card:hover {
