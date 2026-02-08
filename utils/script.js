@@ -8,10 +8,12 @@
 // 0. 헤더/푸터 동적 로딩 (Dynamic Loading)
 // ===========================================
 async function loadComponents() {
+    console.log('loadComponents started'); // Debug
     try {
         // 헤더 로드
         const headerPlaceholder = document.getElementById('header-placeholder');
         if (headerPlaceholder) {
+            console.log('Fetching header...'); // Debug
             const response = await fetch('components/header.html');
             const text = await response.text();
             headerPlaceholder.innerHTML = text;
