@@ -565,10 +565,9 @@ function createPublicationCard(item) {
         linksHtml += `<a href="${item.link}" class="icon-link" aria-label="PDF" target="_blank"><i class="ri-links-line"></i></a>`;
     }
     if (item.bibtex && item.bibtex.trim() !== '') {
-        // BibTeX는 아이콘 클릭 시 복사
-        // safeBibtex: 따옴표 escape
+        // BibTeX는 data 속성에 저장하고 클릭 시 읽어옴 (따옴표/줄바꿈 방지)
         const safeBibtex = item.bibtex.replace(/"/g, '&quot;');
-        linksHtml += `<button class="icon-btn" onclick="copyBibtex(this, '${safeBibtex}')" aria-label="Copy BibTeX"><i class="ri-double-quotes-l"></i></button>`;
+        linksHtml += `<button class="icon-btn bibtex-copy-btn" data-bibtex="${safeBibtex}" onclick="copyBibtex(this)" aria-label="Copy BibTeX"><i class="ri-double-quotes-l"></i></button>`;
     }
 
     return `
@@ -590,8 +589,16 @@ function createPublicationCard(item) {
 function createSimpleListItem(item) {
     let authors = item.authors.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     let linksHtml = '';
+
+    // Link icon
     if (item.link && item.link !== '#' && item.link.trim() !== '') {
         linksHtml += `<a href="${item.link}" class="icon-link" aria-label="Link" style="color: var(--color-text-muted); margin-left: 0.5rem; text-decoration: none;"><i class="ri-links-line"></i></a>`;
+    }
+
+    // BibTeX copy button
+    if (item.bibtex && item.bibtex.trim() !== '') {
+        const safeBibtex = item.bibtex.replace(/"/g, '&quot;');
+        linksHtml += `<button class="icon-btn bibtex-copy-btn" data-bibtex="${safeBibtex}" onclick="copyBibtex(this)" aria-label="Copy BibTeX" style="margin-left: 0.5rem; font-size: 1rem;"><i class="ri-double-quotes-l"></i></button>`;
     }
 
     return `
@@ -646,9 +653,16 @@ function parseCSV(text) {
 }
 
 // BibTeX 복사 기능
-window.copyBibtex = function (btn, text) {
-    navigator.clipboard.writeText(text).then(() => {
+window.copyBibtex = function (btn) {
+    const bibtex = btn.getAttribute('data-bibtex');
+    if (!bibtex) return;
+
+    navigator.clipboard.writeText(bibtex).then(() => {
         showToast("BibTeX Copied!");
+    }).catch(err => {
+        console.error('Copy failed:', err);
+        // Fallback or Alert
+        alert("Copy failed. Please copy manually.");
     });
 };
 
