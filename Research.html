@@ -26,9 +26,9 @@
     <section class="section" style="padding-bottom: 2rem;">
         <div class="container">
             <h1 data-lang-kr="연구 분야" data-lang-en="Research Areas">연구 분야</h1>
-            <p style="color: var(--color-text-muted); max-width: 700px;"
-                data-lang-kr="연구의 다양한 하위 분야를 깊이 있게 연구하며, 특히 다음 세 가지 핵심 영역에 집중하고 있습니다."
-                data-lang-en="We conduct in-depth research in various subfields of AI, focusing particularly on the following three core areas.">
+            <p style="color: var(--color-text-muted);"
+                data-lang-kr="AI와 소프트웨어 공학을 융합하여 다양한 하위 분야를 연구하며, 특히 다음 세 가지 핵심 영역에 집중하고 있습니다."
+                data-lang-en="We conduct research in various subfields by converging AI and Software Engineering, focusing particularly on the following three core areas">
             </p>
         </div>
     </section>
@@ -39,23 +39,84 @@
     -->
     <section class="section">
         <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
+
             <!-- Research Image -->
-            <div style="height: 300px; background: #e2e8f0; border-radius: var(--radius-lg);"></div>
+            <div style="border-radius: var(--radius-lg); overflow: hidden;">
+                <img src="asset/research_ai4se.png" alt="AI4SE" style="width: 100%; height: auto; display: block;">
+            </div>
 
             <!-- Research Text -->
             <div>
-                <h2 style="color: var(--color-accent);">Computer Vision</h2> <!-- 영문 타이틀 -->
+                <!-- 주제목 -->
+                <h2 style="color: var(--color-accent);" data-lang-kr="AI4SE" data-lang-en="AI4SE">AI4SE</h2>
                 <!-- 한/영 소제목 -->
-                <h3 data-lang-kr="시각적 이해와 생성" data-lang-en="Visual Understanding & Generation">시각적 이해와 생성</h3>
-                <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
-                    Object Detection, Segmentation, Generative Adversarial Networks (GANs) 등 이미지와 비디오 데이터를 이해하고 생성하는
-                    알고리즘을 연구합니다.
+                <h3 data-lang-kr="소프트웨어 공학을 위한 AI" data-lang-en="AI for Software Engineering">AI for Software
+                    Engineering</h3>
+                <!-- 한/영 내용 -->
+                <p style="color: var(--color-text-muted); margin-bottom: 1rem;"
+                    data-lang-kr="인공지능 기술을 활용하여 소프트웨어 개발의 생산성을 혁신합니다. 특히 대규모 언어 모델(LLM)을 기반으로 한 소스 코드 생성과 복잡한 버그 및 이슈를 자동으로 해결하는 지능형 시스템을 연구합니다."
+                    data-lang-en="We revolutionize software development productivity using AI techniques. We focus on intelligent systems that generate source code and automatically resolve complex bugs and issues, leveraging Large Language Models (LLMs).">
+                    인공지능 기술을 활용하여 소프트웨어 개발의 생산성을 혁신합니다. 특히 대규모 언어 모델(LLM)을 기반으로 한 소스 코드 생성과 복잡한 버그 및 이슈를 자동으로 해결하는 지능형
+                    시스템을 연구합니다.
                 </p>
-                <!-- ?? ?워??리스??-->
+                <!-- 키워드 리스트 -->
                 <ul style="padding-left: 1.2rem; color: var(--color-text-muted); list-style: disc;">
-                    <li>3D Reconstruction</li>
-                    <li>Medical Image Analysis</li>
-                    <li>Video Understanding</li>
+                    <li data-lang-kr="소스 코드 생성" data-lang-en="Source Code Generation">소스 코드 생성</li>
+                    <li data-lang-kr="버그 및 이슈 해결" data-lang-en="Bug & Issue Resolving">버그 및 이슈 해결</li>
+                    <li data-lang-kr="자동화된 프로그램 수정" data-lang-en="Automated Program Repair">자동화된 프로그램 수정</li>
+                </ul>
+            </div>
+
+            <!-- Research Image -->
+            <div style="border-radius: var(--radius-lg); overflow: hidden;">
+                <img src="asset/research_se4ai.png" alt="SE4AI" style="width: 100%; height: auto; display: block;">
+            </div>
+
+            <!-- Research Text -->
+            <div>
+                <!-- 주제목 -->
+                <h2 style="color: var(--color-accent);" data-lang-kr="SE4AI" data-lang-en="SE4AI">SE4AI</h2>
+                <!-- 한/영 소제목 -->
+                <h3 data-lang-kr="AI를 위한 소프트웨어 공학" data-lang-en="Software Engineering for AI">Software Engineering for
+                    AI</h3>
+                <!-- 한/영 내용 -->
+                <p style="color: var(--color-text-muted); margin-bottom: 1rem;"
+                    data-lang-kr="AI 시스템의 품질과 신뢰성을 보장하기 위한 엔지니어링 프로세스를 연구합니다. 지능형 코드 리뷰와 체계적인 검증을 통해, 단순히 작동하는 AI를 넘어 유지보수 가능하고 안전한 AI 소프트웨어를 구축합니다."
+                    data-lang-en="We research engineering processes to ensure the quality and reliability of AI systems. Through intelligent code review and systematic verification, we build AI software that is not only functional but also maintainable and safe.">
+                    AI 시스템의 품질과 신뢰성을 보장하기 위한 엔지니어링 프로세스를 연구합니다. 지능형 코드 리뷰와 체계적인 검증을 통해, 단순히 작동하는 AI를 넘어 유지보수 가능하고 안전한 AI
+                    소프트웨어를 구축합니다.
+                </p>
+                <!-- 키워드 리스트 -->
+                <ul style="padding-left: 1.2rem; color: var(--color-text-muted); list-style: disc;">
+                    <li data-lang-kr="지능형 코드 리뷰" data-lang-en="Intelligent Code Review">지능형 코드 리뷰</li>
+                    <li data-lang-kr="AI 시스템 신뢰성" data-lang-en="AI System Reliability">AI 시스템 신뢰성</li>
+                    <li data-lang-kr="모델 검증 및 배포" data-lang-en="Model Verification & Deployment">모델 검증 및 배포</li>
+                </ul>
+            </div>
+
+            <!-- Research Image -->
+            <div style="border-radius: var(--radius-lg); overflow: hidden;">
+                <img src="asset/research_data4ai.png" alt="Data4AI" style="width: 100%; height: auto; display: block;">
+            </div>
+
+            <!-- Research Text -->
+            <div>
+                <!-- 주제목 -->
+                <h2 style="color: var(--color-accent);" data-lang-kr="Data4AI" data-lang-en="Data4AI">Data4AI</h2>
+                <!-- 한/영 소제목 -->
+                <h3 data-lang-kr="AI를 위한 데이터 엔지니어링" data-lang-en="Data Engineering for AI">Data Engineering for AI</h3>
+                <!-- 한/영 내용 -->
+                <p style="color: var(--color-text-muted); margin-bottom: 1rem;"
+                    data-lang-kr="AI가 소프트웨어를 본질적으로 이해하도록 돕는 데이터 표현(Representation)을 연구합니다. 방대한 코드 데이터에서 의미를 검색하고 분석하여, AI 모델의 성능을 극대화하는 데이터 중심의 접근법을 취합니다."
+                    data-lang-en="We research data representations that enable AI to fundamentally understand software. By searching and analyzing semantics in big code data, we adopt a data-centric approach to maximize AI model performance.">
+                    AI가 소프트웨어를 본질적으로 이해하도록 돕는 데이터 표현(Representation)을 연구합니다. 방대한 코드 데이터에서 의미를 검색하고 분석하여, AI 모델의 성능을
+                    극대화하는 데이터 중심의 접근법을 취합니다.
+                </p>
+                <!-- 키워드 리스트 -->
+                <ul style="padding-left: 1.2rem; color: var(--color-text-muted); list-style: disc;">
+                    <li data-lang-kr="코드 표현 학습" data-lang-en="Code Representation Learning">코드 표현 학습</li>
+                    <li data-lang-kr="의미 기반 코드 검색" data-lang-en="Semantic Code Search">의미 기반 코드 검색</li>
+                    <li data-lang-kr="대규모 코드 분석" data-lang-en="Big Code Analysis">대규모 코드 분석</li>
                 </ul>
             </div>
         </div>

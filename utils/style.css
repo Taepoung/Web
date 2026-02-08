@@ -353,28 +353,99 @@ ul {
    [메인 히어로 섹션 (main Section)]
    홈페이지 가장 위의 큰 제목 부분입니다.
    ========================================================================== */
+/* ==========================================================================
+   [메인 히어로 섹션 (main Section)]
+   홈페이지 가장 위의 큰 제목 부분입니다.
+   ========================================================================== */
 .main {
-    padding: 6rem 0;
+    min-height: 85vh;
+    /* 화면 높이의 85% 차지 */
+    display: flex;
+    align-items: center;
+    /* 수직 중앙 정렬 */
+    justify-content: center;
     text-align: center;
-    /* 배경 그라데이션 - 너무 밋밋하지 않게 살짝 주황빛을 넣거나 뺄 수 있습니다. */
-    background: radial-gradient(circle at top center, #fff7ed 0%, transparent 70%);
+    position: relative;
+    overflow: hidden;
+    /* 배경: 은은한 그라데이션 + 주황빛 포인트 */
+    background: radial-gradient(circle at 50% 30%, #fff7ed 0%, transparent 60%),
+        linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%);
+}
+
+/* 배경 패턴 (선택사항, 모눈종이 느낌의 점 패턴) */
+.main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.4;
+    z-index: 0;
+    /* 아래로 갈수록 흐려지게 */
+    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+}
+
+.main .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* 등장 애니메이션 (아래에서 위로 떠오름) */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .main h1 {
-    font-size: 3.5rem;
+    font-size: 4rem;
+    /* 폰트 키움 */
     margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+    /* 자간 좁힘 (세련된 느낌) */
+
     /* 글자에 그라데이션 효과 */
-    background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+    background: linear-gradient(to right, var(--color-primary) 20%, var(--color-accent));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+
+    /* 애니메이션 적용 */
+    animation: fadeUp 0.8s ease-out forwards;
+    opacity: 0;
 }
 
 .main p {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     color: var(--color-text-muted);
-    max-width: 700px;
-    margin: 0 auto 2rem;
+    max-width: 650px;
+    margin: 0 auto 3rem;
+    font-weight: 500;
+    line-height: 1.6;
+
+    /* 애니메이션 (딜레이) */
+    animation: fadeUp 0.8s ease-out 0.2s forwards;
+    opacity: 0;
+}
+
+/* 버튼 그룹 */
+.main-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+
+    /* 애니메이션 (딜레이) */
+    animation: fadeUp 0.8s ease-out 0.4s forwards;
+    opacity: 0;
 }
 
 /* ==========================================================================

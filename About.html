@@ -27,35 +27,94 @@
         <div class="container">
             <h1 data-lang-kr="연구실 소개" data-lang-en="About Us">연구실 소개</h1>
 
-            <!-- 그리드 구조: 왼쪽(텍스트) / 오른쪽(이미지) -->
             <div
                 style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 2rem;">
 
-                <!-- 왼쪽: 텍스트 -->
+                <!-- Image -->
+                <div style="border-radius: var(--radius-lg); overflow: hidden;">
+                    <img src="asset/logo_with_text.png" alt="BASE Lab"
+                        style="width: 100%; height: auto; display: block;">
+                </div>
+
+                <!-- Text -->
                 <div>
-                    <h2 style="font-size: 1.8rem; margin-bottom: 1rem;" data-lang-kr="비전" data-lang-en="Our Vision">비전
+                    <h2 style="font-size: 1.8rem; margin-bottom: 1rem; color: var(--color-accent);" data-lang-kr="비전"
+                        data-lang-en="Our Vision">비전
                     </h2>
 
-                    <!-- 단락 1 -->
+                    <!-- Paragraph 1 -->
                     <p style="margin-bottom: 1.5rem; color: var(--color-text-muted);"
-                        data-lang-kr="지능형 시스템 연구실(IS Lab)은 인간 수준의 인공지능을 구현하고 이를 실제 세상의 문제에 적용하는 것을 목표로 합니다. 우리는 딥러닝, 컴퓨터 비전, 자연어 처리 분야의 핵심 기술을 연구합니다."
-                        data-lang-en="The Intelligent Systems Lab (IS Lab) aims to implement human-level AI and apply it to real-world problems. We research core technologies in Deep Learning, Computer Vision, and NLP.">
-                        지능형 시스템 연구실(IS Lab)은 인간 수준의 인공지능을 구현하고 이를 실제 세상의 문제에 적용하는 것을 목표로 합니다. 우리는 딥러닝, 컴퓨터 비전, 자연어 처리
-                        분야의 핵심 기술을 연구합니다.
+                        data-lang-kr="BASE Lab(Bidirectional AI-Software Engineering Lab)은 AI와 소프트웨어 공학의 상호작용을 탐구합니다. 우리는 AI4SE, SE4AI, Data4AI의 융합 연구를 통해 지능형 소프트웨어 시스템을 구축하고, 신뢰할 수 있는 인공지능을 구현하는 것을 목표로 합니다."
+                        data-lang-en="The Bidirectional AI-Software Engineering Lab (BASE Lab) explores the interaction between AI and Software Engineering. We aim to build intelligent software systems and trustworthy AI through convergent research in AI4SE, SE4AI, and Data4AI.">
+                        SE4AI, Data4AI의 융합 연구를 통해 지능형 소프트웨어 시스템을 구축하고, 신뢰할 수 있는 인공지능을 구현하는 것을 목표로 합니다.
                     </p>
+
+
+                    <!-- Navigation Buttons -->
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <!-- View Research -->
+                        <a href="Research.html"
+                            style="padding: 0.8rem 1.5rem; background-color: white; color: var(--color-accent); text-decoration: none; border: 1px solid var(--color-accent); border-radius: 8px; font-weight: 500; transition: all 0.2s;"
+                            onmouseover="this.style.backgroundColor='var(--color-accent)'; this.style.color='white'"
+                            onmouseout="this.style.backgroundColor='white'; this.style.color='var(--color-accent)'">
+                            <span data-lang-kr="연구분야 보기" data-lang-en="View Research">연구분야 보기</span>
+                        </a>
+
+                        <!-- View Publications -->
+                        <a href="Publications_Conference.html"
+                            style="padding: 0.8rem 1.5rem; background-color: white; color: var(--color-accent); text-decoration: none; border: 1px solid var(--color-accent); border-radius: 8px; font-weight: 500; transition: all 0.2s;"
+                            onmouseover="this.style.backgroundColor='var(--color-accent)'; this.style.color='white'"
+                            onmouseout="this.style.backgroundColor='white'; this.style.color='var(--color-accent)'">
+                            <span data-lang-kr="출판물 보기" data-lang-en="View Publications">출판물 보기</span>
+                        </a>
+
+                        <!-- View Members -->
+                        <a href="Students.html"
+                            style="padding: 0.8rem 1.5rem; background-color: white; color: var(--color-accent); text-decoration: none; border: 1px solid var(--color-accent); border-radius: 8px; font-weight: 500; transition: all 0.2s;"
+                            onmouseover="this.style.backgroundColor='var(--color-accent)'; this.style.color='white'"
+                            onmouseout="this.style.backgroundColor='white'; this.style.color='var(--color-accent)'">
+                            <span data-lang-kr="구성원 보기" data-lang-en="View Members">구성원 보기</span>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- 오른쪽: 이미지 -->
-                <div
-                    style="height: 300px; background: #e2e8f0; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: #94a3b8;">
-                    Lab Image Placeholder
-                </div>
 
+
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- 
+      [Sponsors Section]
+      Grid of logos and descriptions
+    -->
+    <section class="section" style="padding-top: 0;">
+        <div class="container">
+            <!-- Title -->
+            <h2 style="font-size: 1.8rem; margin-bottom: 2rem;" data-lang-kr="후원사" data-lang-en="Sponsors">후원사</h2>
+
+            <!-- Grid -->
+            <!-- Grid -->
+            <!-- Use grid-3 to match Student page layout -->
+            <div class="grid-3">
+
+                <!-- Sponsor Item 1 -->
+                <div class="card" style="text-align: center; padding: 1.5rem; align-items: center;">
+                    <div
+                        style="height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; overflow: hidden; width: 100%;">
+                        <img src="asset/sponsers/Dgist.jpg" alt="DGIST"
+                            style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--color-text-main);"
+                        data-lang-kr="대구경북과학기술원(DGIST)" data-lang-en="DGIST">대구경북과학기술원(DGIST)</h3>
+                    <p style="font-size: 0.9rem; color: var(--color-text-muted);" data-lang-kr="대한민국, 대구"
+                        data-lang-en="South Korea, Daegu">대한민국, 대구</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- [Footer] -->
     <div id="footer-placeholder"></div>
 
     <script src="utils/script.js"></script>
