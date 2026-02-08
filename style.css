@@ -1,0 +1,486 @@
+/* ==========================================================================
+   [디자인 시스템 및 설정 (Design System & Variables)]
+   이 곳에서 웹사이트의 전체적인 색상, 폰트, 간격 등을 설정할 수 있습니다.
+   이 값들만 변경해도 사이트의 분위기가 크게 바뀝니다.
+   ========================================================================== */
+:root {
+    /* 
+       [색상 설정 (Colors)] 
+       --color-primary: 글자색, 제목 등 기본적인 어두운 색상 (다크 그레이)
+       --color-accent: 포인트 색상 (로고, 버튼, 강조 등에 사용됨). 현재 주황색(#ff8e1d)으로 설정됨.
+       --color-bg: 배경색 (흰색)
+    */
+    --color-primary: #1f1f1f;
+    --color-secondary: #4b5563;
+    --color-accent: #ff8e1d;
+    /* <-- 이 값을 변경하면 사이트의 포인트 컬러가 바뀝니다. */
+    --color-accent-hover: #e67e19;
+    /* 버튼 위에 마우스를 올렸을 때의 색상 (약간 더 어두운 주황색) */
+    --color-bg: #ffffff;
+    --color-surface: #f9fafb;
+    /* 카드나 박스의 배경색 (아주 연한 회색) */
+    --color-text-main: #1f1f1f;
+    --color-text-muted: #64748b;
+    /* 부가 설명 등 흐린 글자색 */
+    --color-border: #e5e7eb;
+    /* 테두리 색상 */
+
+    /* 
+       [폰트 설정 (Typography)] 
+       Google Fonts에서 폰트를 가져와서 여기에 적용할 수 있습니다.
+    */
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* [간격 및 기타 설정 (Spacing & Misc)] - 초보자라면 건드리지 않아도 됩니다. */
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 4rem;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --radius-full: 9999px;
+
+    --transition: all 0.3s ease;
+}
+
+/* ==========================================================================
+   [기본 초기화 (Reset & Base)]
+   모든 브라우저에서 동일하게 보이도록 하는 기본 설정입니다. 수정하지 마세요.
+   ========================================================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-primary);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+}
+
+ul {
+    list-style: none;
+}
+
+/* ==========================================================================
+   [유틸리티 클래스 (Utilities)]
+   자주 사용되는 스타일을 미리 정의해 둔 것입니다.
+   ========================================================================== */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    /* 전체 콘텐츠의 최대 너비 */
+    margin: 0 auto;
+    /* 가운데 정렬 */
+    padding: 0 var(--spacing-md);
+}
+
+.section {
+    padding: var(--spacing-xl) 0;
+    /* 섹션 위아래 여백 */
+}
+
+/* 버튼 스타일 */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+}
+
+/* 색상이 채워진 버튼 (예: 연구 분야 보기) */
+.btn-primary {
+    background-color: var(--color-accent);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-accent-hover);
+    transform: translateY(-2px);
+    /* 마우스 올리면 살짝 위로 올라감 */
+}
+
+/* 테두리만 있는 버튼 (예: 구성원 만나기) */
+.btn-outline {
+    border: 2px solid var(--color-accent);
+    color: var(--color-accent);
+    background: transparent;
+}
+
+.btn-outline:hover {
+    background-color: var(--color-accent);
+    color: white;
+}
+
+/* ==========================================================================
+   [헤더 및 네비게이션 (Header & Nav)]
+   상단 메뉴바 스타일입니다.
+   ========================================================================== */
+/* ==========================================================================
+   [헤더 및 네비게이션 (Header & Nav)]
+   상단 메뉴바 스타일입니다.
+   ========================================================================== */
+.header {
+    position: sticky;
+    /* 스크롤 내려도 상단에 고정 */
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    /* 반투명 배경 */
+    backdrop-filter: blur(10px);
+    /* 배경 블러 효과 */
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.5rem 0;
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.lab-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    white-space: nowrap;
+}
+
+.nav-container {
+    display: none;
+    /* Deprecated class, ensure it's hidden or removed */
+}
+
+.header-nav {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.5rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo span {
+    color: var(--color-accent);
+    /* 로고의 강조된 부분 색상 */
+}
+
+.nav-menu {
+    display: flex;
+    /* 가로(수평) 배열 설정 (Horizontal Layout) */
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-link {
+    display: inline-block;
+    width: 110px;
+    text-align: center;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--color-accent);
+    /* 마우스 올리거나 활성화된 메뉴 색상 */
+}
+
+/* --- 드롭다운 메뉴 (Dropdown Menu) --- */
+/* 드롭다운 부모 요소 */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* 마우스 올렸을 때 나타나는 서브메뉴 박스 */
+.dropdown-content {
+    display: none;
+    /* 평소에는 숨김 */
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0;
+    top: 100%;
+    /* 메뉴 바로 아래 배치 */
+    left: 50%;
+    transform: translateX(-50%);
+    /* 가운데 정렬 보정 */
+}
+
+/* 드롭다운 안의 링크들 */
+.dropdown-content li a {
+    color: var(--color-text-main);
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    display: block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    /* 줄바꿈 방지 */
+}
+
+/* 링크에 마우스 올렸을 때 */
+.dropdown-content li a:hover {
+    background-color: var(--color-surface);
+    color: var(--color-accent);
+}
+
+/* 부모 메뉴(.dropdown)에 마우스 올리면 서브메뉴(.dropdown-content) 보임 */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* ==========================================================================
+   [언어 선택 버튼 (Language Toggle)]
+   ========================================================================== */
+.lang-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--color-border);
+    padding: 0.25rem;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+}
+
+.lang-btn {
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    transition: var(--transition);
+}
+
+.lang-btn.active {
+    background-color: var(--color-accent);
+    /* 활성화된 언어 버튼 색상 (주황색) */
+    color: white;
+}
+
+/* ==========================================================================
+   [메인 히어로 섹션 (main Section)]
+   홈페이지 가장 위의 큰 제목 부분입니다.
+   ========================================================================== */
+.main {
+    padding: 6rem 0;
+    text-align: center;
+    /* 배경 그라데이션 - 너무 밋밋하지 않게 살짝 주황빛을 넣거나 뺄 수 있습니다. */
+    background: radial-gradient(circle at top center, #fff7ed 0%, transparent 70%);
+}
+
+.main h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    /* 글자에 그라데이션 효과 */
+    background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.main p {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    max-width: 700px;
+    margin: 0 auto 2rem;
+}
+
+/* ==========================================================================
+   [카드 디자인 (Cards)]
+   뉴스, 논문, 멤버 프로필 등에 사용되는 네모난 박스 디자인입니다.
+   ========================================================================== */
+.grid-3 {
+    display: grid;
+    /* 화면 크기에 따라 자동으로 3열, 2열, 1열로 바뀝니다. */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    /* 마우스 올리면 살짝 뜸 */
+    box-shadow: var(--shadow-lg);
+    /* 그림자 진해짐 */
+    border-color: var(--color-accent);
+    /* 테두리가 포인트 색으로 변함 */
+}
+
+/* ==========================================================================
+   [푸터 (Footer)]
+   페이지 맨 아래 검정색 영역입니다.
+   ========================================================================== */
+.footer {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 4rem 0 2rem;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.footer h3 {
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.footer-link {
+    display: block;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+}
+
+.footer-link:hover {
+    color: white;
+}
+
+.copyright {
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   [소셜 아이콘 (Social Icons)]
+   멤버 카드 등에 들어가는 SNS 아이콘 스타일입니다.
+   ========================================================================== */
+.social-links {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+/* 카드 내부에서는 가운데 정렬 */
+.social-links.justify-center {
+    justify-content: center;
+}
+
+.social-links a {
+    color: var(--color-text-muted);
+    font-size: 1.2rem;
+    transition: var(--transition);
+}
+
+.social-links a:hover {
+    color: var(--color-accent);
+    transform: translateY(-2px);
+}
+
+/* 학술 링크 (Academic Links) - 텍스트 + 아이콘 스타일 */
+.academic-links {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+    /* 소셜 링크와의 간격 */
+}
+
+.academic-links a {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.3s ease;
+    border: 1px solid #e2e8f0;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    /* 알약 모양 */
+}
+
+
+/* 빈 링크 숨김 처리 (Hide Empty Links) */
+a.icon-link[href="#"] {
+    display: none;
+}
+
+.academic-links a:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background: #f1f5f9;
+}
+
+/* ==========================================================================
+   [반응형 (Mobile Responsiveness)]
+   스마트폰 화면 등 좁은 화면에서의 스타일을 정의합니다.
+   ========================================================================== */
+@media (max-width: 768px) {
+    .nav-menu {
+        display: none;
+        /* 모바일에서는 일단 메뉴를 숨김 (추후 JS로 토글 기능 추가 가능) */
+    }
+
+    .main h1 {
+        font-size: 2.5rem;
+        /* 제목 글자 크기 줄임 */
+    }
+}
