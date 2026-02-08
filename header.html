@@ -1,64 +1,69 @@
-<div class="container">
-    <!-- Row 1: Logo, Title, Lang -->
-    <div class="header-top">
-        <!-- 로고 -->
-        <a href="index.html" class="logo">
-            <img src="asset/logo.png" alt="BASE Lab Logo" style="height: 40px; width: auto;">
-        </a>
+<header class="header">
+    <div class="container">
+        <!-- Row 1: Logo, Title, Lang -->
+        <div class="header-top">
+            <!-- 로고 -->
+            <a href="index.html" class="logo">
+                <img src="asset/logo.png" alt="BASE Lab Logo" style="height: 40px; width: auto;">
+            </a>
 
-        <a href="index.html" class="lab-title"><span style="color: var(--color-accent);">B</span>idirectional <span
-                style="color: var(--color-accent);">A</span>I-<span style="color: var(--color-accent);">S</span>oftware
-            <span style="color: var(--color-accent);">E</span>ngineering <span
-                style="color: var(--color-accent);">Lab</span>oratory
-        </a>
+            <a href="index.html" class="lab-title"><span style="color: var(--color-accent);">B</span>idirectional <span
+                    style="color: var(--color-accent);">A</span>I-<span
+                    style="color: var(--color-accent);">S</span>oftware
+                <span style="color: var(--color-accent);">E</span>ngineering <span
+                    style="color: var(--color-accent);">Lab</span>oratory
+            </a>
 
-        <!-- 언어 변경 버튼 -->
-        <div class="lang-toggle">
-            <div class="lang-btn active" data-lang="kr">KR</div>
-            <div class="lang-btn" data-lang="en">EN</div>
+            <!-- 언어 변경 버튼 -->
+            <div class="lang-toggle">
+                <div class="lang-btn active" data-lang="kr">KR</div>
+                <div class="lang-btn" data-lang="en">EN</div>
+            </div>
         </div>
-    </div>
 
-    <!-- Row 2: Navigation -->
-    <nav class="header-nav">
-        <ul class="nav-menu">
-            <!-- 
+        <!-- Row 2: Navigation -->
+        <nav class="header-nav">
+            <ul class="nav-menu">
+                <!-- 
           data-lang-kr="..." : 한국어일 때 보일 텍스트
           data-lang-en="..." : 영어일 때 보일 텍스트
           메뉴를 추가하거나 이름을 바꾸려면 이 부분을 수정하세요.
           -->
 
-            <!-- 소개 -->
-            <li><a href="About.html" class="nav-link" data-lang-kr="소개" data-lang-en="About">소개</a></li>
+                <!-- 소개 -->
+                <li><a href="About.html" class="nav-link" data-lang-kr="소개" data-lang-en="About">소개</a></li>
 
-            <!-- 연구 -->
-            <li><a href="Research.html" class="nav-link" data-lang-kr="연구" data-lang-en="Research">연구</a></li>
+                <!-- 연구 -->
+                <li><a href="Research.html" class="nav-link" data-lang-kr="연구" data-lang-en="Research">연구</a></li>
 
-            <!-- [드롭다운 메뉴] 구성원 -->
-            <li class="dropdown">
-                <a href="Professor.html" class="nav-link" data-lang-kr="구성원" data-lang-en="Members">구성원</a>
+                <!-- [드롭다운 메뉴] 구성원 -->
+                <li class="dropdown">
+                    <a href="Professor.html" class="nav-link" data-lang-kr="구성원" data-lang-en="Members">구성원</a>
 
-                <!-- 드롭다운 메뉴 -->
-                <ul class="dropdown-content">
-                    <li><a href="Professor.html" data-lang-kr="교수" data-lang-en="Professor">교수</a></li>
-                    <li><a href="Students.html" data-lang-kr="연구원" data-lang-en="Researchers">연구원</a></li>
-                    <li><a href="Supporters.html" data-lang-kr="서포터즈" data-lang-en="Supporters">서포터즈</a></li>
-                    <li><a href="Alumni.html" data-lang-kr="졸업생" data-lang-en="Alumni">졸업생</a></li>
-                </ul>
-            </li>
+                    <!-- 드롭다운 메뉴 -->
+                    <ul class="dropdown-content">
+                        <li><a href="Professor.html" data-lang-kr="교수" data-lang-en="Professor">교수</a></li>
+                        <li><a href="Students.html" data-lang-kr="연구원" data-lang-en="Researchers">연구원</a></li>
+                        <li><a href="Supporters.html" data-lang-kr="서포터즈" data-lang-en="Supporters">서포터즈</a></li>
+                        <li><a href="Alumni.html" data-lang-kr="졸업생" data-lang-en="Alumni">졸업생</a></li>
+                    </ul>
+                </li>
 
 
-            <!-- [드롭다운 메뉴] 출판 -->
-            <li class="dropdown">
-                <a href="Publications_Conference.html" class="nav-link" data-lang-kr="출판"
-                    data-lang-en="Publications">출판</a>
-                <ul class="dropdown-content">
-                    <li><a href="Publications_Conference.html" data-lang-kr="컨퍼런스" data-lang-en="Conference">컨퍼런스</a>
-                    </li>
-                    <li><a href="Publications_Journal.html" data-lang-kr="저널" data-lang-en="Journal">저널</a></li>
-                    <li><a href="Publications_Former.html" data-lang-kr="이전 게시물" data-lang-en="Former">이전 게시물</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
-</div>
+                <!-- [드롭다운 메뉴] 출판 -->
+                <li class="dropdown">
+                    <a href="Publications_Conference.html" class="nav-link" data-lang-kr="출판"
+                        data-lang-en="Publications">출판</a>
+                    <ul class="dropdown-content">
+                        <li><a href="Publications_Conference.html" data-lang-kr="컨퍼런스"
+                                data-lang-en="Conference">컨퍼런스</a>
+                        </li>
+                        <li><a href="Publications_Journal.html" data-lang-kr="저널" data-lang-en="Journal">저널</a></li>
+                        <li><a href="Publications_Former.html" data-lang-kr="이전 게시물" data-lang-en="Former">이전 게시물</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
