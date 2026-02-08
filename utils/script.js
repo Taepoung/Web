@@ -91,9 +91,12 @@ function initLanguage() {
         }
     }
 
-    langBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            setLanguage(btn.dataset.lang);
+    // 전체 토글 컨테이너 클릭 시 스왑 (어느 버튼을 눌러도, 같은 언어를 눌러도 변경)
+    document.querySelectorAll('.lang-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+            const nextLang = currentLang === 'kr' ? 'en' : 'kr';
+            setLanguage(nextLang);
         });
     });
 
