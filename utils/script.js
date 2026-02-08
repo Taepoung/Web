@@ -2,30 +2,18 @@
   script.js - 웹사이트의 동작을 담당하는 스크립트 파일입니다.
   주로 언어 변경(한국어/영어) 기능과 스크롤 애니메이션을 처리합니다.
 */
-console.log('Script file loaded! (Global scope)');
-
-// ===========================================
-// 0. 헤더/푸터 동적 로딩 (Dynamic Loading)
-
-
-// ===========================================
-// 0. 헤더/푸터 동적 로딩 (Dynamic Loading)
-// ===========================================
 // ===========================================
 // 0. 헤더/푸터 동적 로딩 (Dynamic Loading)
 // ===========================================
 async function loadComponents() {
-    console.log('loadComponents started');
     try {
         const headerPlaceholder = document.getElementById('header-placeholder');
         if (headerPlaceholder) {
-            console.log('Fetching header from: components/header.html');
             const response = await fetch('components/header.html');
             if (!response.ok) {
                 throw new Error(`Failed to load header: ${response.status} ${response.statusText}`);
             }
             const text = await response.text();
-            console.log('Header loaded successfully');
             headerPlaceholder.innerHTML = text;
         } else {
             console.error('Header placeholder not found!');
@@ -33,13 +21,11 @@ async function loadComponents() {
 
         const footerPlaceholder = document.getElementById('footer-placeholder');
         if (footerPlaceholder) {
-            console.log('Fetching footer from: components/footer.html');
             const response = await fetch('components/footer.html');
             if (!response.ok) {
                 throw new Error(`Failed to load footer: ${response.status} ${response.statusText}`);
             }
             const text = await response.text();
-            console.log('Footer loaded successfully');
             footerPlaceholder.innerHTML = text;
         } else {
             console.error('Footer placeholder not found!');
@@ -51,8 +37,7 @@ async function loadComponents() {
         hideEmptyLinks();
 
     } catch (error) {
-        console.error('CRITICAL ERROR loading components:', error);
-        alert('Components failed to load. Check console for details. Path issue or CORS?');
+        console.error('Error loading components:', error);
     }
 }
 
