@@ -381,12 +381,6 @@ ul {
    [카드 디자인 (Cards)]
    뉴스, 논문, 멤버 프로필 등에 사용되는 네모난 박스 디자인입니다.
    ========================================================================== */
-.grid-3 {
-    display: grid;
-    /* 화면 크기에 따라 자동으로 3열, 2열, 1열로 바뀝니다. */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
 
 .card {
     background: var(--color-surface);

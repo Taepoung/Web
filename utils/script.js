@@ -2,30 +2,27 @@
   script.js - 웹사이트의 동작을 담당하는 스크립트 파일입니다.
   주로 언어 변경(한국어/영어) 기능과 스크롤 애니메이션을 처리합니다.
 */
-console.log('Script file loaded! (Global scope)');
 
 // ===========================================
-// 0. 헤더/푸터 동적 로딩 (Dynamic Loading)
+// CONFIGURATION
+// ===========================================
+// 여기서 "Former" (이전 논문)와 "Current" (최신 논문)을 나누는 기준 연도를 설정하세요.
+// 예: 2020으로 설정하면, 2020년 포함 이후는 최신, 2019년 이전은 Former로 분류됩니다.
+const RECENT_THRESHOLD_YEAR = 2020;
 
 
-// ===========================================
-// 0. 헤더/푸터 동적 로딩 (Dynamic Loading)
-// ===========================================
 // ===========================================
 // 0. 헤더/푸터 동적 로딩 (Dynamic Loading)
 // ===========================================
 async function loadComponents() {
-    console.log('loadComponents started');
     try {
         const headerPlaceholder = document.getElementById('header-placeholder');
         if (headerPlaceholder) {
-            console.log('Fetching header from: components/header.html');
             const response = await fetch('components/header.html');
             if (!response.ok) {
                 throw new Error(`Failed to load header: ${response.status} ${response.statusText}`);
             }
             const text = await response.text();
-            console.log('Header loaded successfully');
             headerPlaceholder.innerHTML = text;
         } else {
             console.error('Header placeholder not found!');
@@ -33,13 +30,11 @@ async function loadComponents() {
 
         const footerPlaceholder = document.getElementById('footer-placeholder');
         if (footerPlaceholder) {
-            console.log('Fetching footer from: components/footer.html');
             const response = await fetch('components/footer.html');
             if (!response.ok) {
                 throw new Error(`Failed to load footer: ${response.status} ${response.statusText}`);
             }
             const text = await response.text();
-            console.log('Footer loaded successfully');
             footerPlaceholder.innerHTML = text;
         } else {
             console.error('Footer placeholder not found!');
@@ -51,8 +46,7 @@ async function loadComponents() {
         hideEmptyLinks();
 
     } catch (error) {
-        console.error('CRITICAL ERROR loading components:', error);
-        alert('Components failed to load. Check console for details. Path issue or CORS?');
+        console.error('Error loading components:', error);
     }
 }
 
@@ -109,6 +103,12 @@ function initLanguage() {
         });
 
         localStorage.setItem('preferred-lang', lang);
+
+        // 멤버 페이지가 활성화된 경우, 언어 변경 시 카드 내용 다시 렌더링
+        const pageType = document.body.getAttribute('data-page-type');
+        if (pageType && ['students', 'alumni', 'supporters'].includes(pageType)) {
+            renderMemberContent(pageType);
+        }
     }
 
     langBtns.forEach(btn => {
@@ -119,6 +119,17 @@ function initLanguage() {
 
     const savedLang = localStorage.getItem('preferred-lang') || 'kr';
     setLanguage(savedLang);
+}
+
+// Helper: 요소의 텍스트를 현재 언어 설정에 맞게 업데이트
+function updateElementText(el) {
+    const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+    const isKr = currentLang === 'kr';
+    if (isKr && el.hasAttribute('data-lang-kr')) {
+        el.textContent = el.getAttribute('data-lang-kr');
+    } else if (!isKr && el.hasAttribute('data-lang-en')) {
+        el.textContent = el.getAttribute('data-lang-en');
+    }
 }
 
 // ===========================================
@@ -192,28 +203,37 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===========================================
 // 5. CSV 기반 멤버 동적 로딩 (Members Loading)
 // ===========================================
+// 전역 변수로 멤버 데이터 저장
+let allMemberRows = [];
+
 async function loadMembers(pageType) {
     try {
-        const response = await fetch('data/members.csv');
+        const response = await fetch('./data/members.csv');
         const text = await response.text();
-        const rows = parseCSV(text);
+        allMemberRows = parseCSV(text); // 데이터 저장
 
-        const container = document.getElementById('member-list');
-        if (!container) return;
+        // 초기 렌더링
+        renderMemberContent(pageType);
 
-        // 현재 언어 확인
-        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
-        const isKr = currentLang === 'kr';
-
-        if (pageType === 'students') {
-            renderStudentsPage(rows, container, isKr);
-        } else if (pageType === 'alumni') {
-            renderAlumniPage(rows, container, isKr);
-        } else if (pageType === 'supporters') {
-            renderSupportersPage(rows, container, isKr);
-        }
     } catch (error) {
         console.error('Error loading members:', error);
+    }
+}
+
+function renderMemberContent(pageType) {
+    const container = document.getElementById('member-list');
+    if (!container || allMemberRows.length === 0) return;
+
+    // 현재 언어 확인
+    const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+    const isKr = currentLang === 'kr';
+
+    if (pageType === 'students') {
+        renderStudentsPage(allMemberRows, container, isKr);
+    } else if (pageType === 'alumni') {
+        renderAlumniPage(allMemberRows, container, isKr);
+    } else if (pageType === 'supporters') {
+        renderSupportersPage(allMemberRows, container, isKr);
     }
 }
 
@@ -274,65 +294,120 @@ function createMemberGrid(members, isKr, gridClass, isAlumni) {
 function createMemberCard(member, isKr, isAlumni) {
     const name = isKr && member.name_kr ? member.name_kr : member.name_en;
 
-    // Links
-    let linksHtml = '';
-    const linkMap = [
-        { key: 'email', icon: 'fas fa-envelope' },
+    // 1. Image Handling
+    const unknownImage = 'data/members/unknown.png';
+    let imageSrc = member.image && member.image.trim() !== '' ? member.image : unknownImage;
+
+    // Fallback for image loading error (handled via onerror attribute)
+    let imageHtml = '';
+    if (!isAlumni) {
+        imageHtml = `<img src="${imageSrc}" alt="${name}" 
+            onerror="this.onerror=null; this.src='${unknownImage}';"
+            style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; background: #cbd5e1; border: 3px solid white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">`;
+    }
+
+    // 2. Link Grouping
+    const socialMap = [
         { key: 'website', icon: 'fas fa-home' },
         { key: 'github', icon: 'fab fa-github' },
         { key: 'linkedin', icon: 'fab fa-linkedin' },
         { key: 'instagram', icon: 'fab fa-instagram' },
         { key: 'facebook', icon: 'fab fa-facebook' },
-        { key: 'thread', icon: 'fab fa-threads' },
-        { key: 'google scholar', icon: 'fas fa-graduation-cap' },
-        { key: 'dblp', icon: 'fas fa-book' },
-        { key: 'orcid', icon: 'fab fa-orcid' }
+        { key: 'thread', icon: 'fab fa-threads' }
     ];
 
-    // Social & Academic Links merged for simplicity or separated if needed
-    // User asked for "Links" at the bottom.
-    let activeLinks = [];
-    linkMap.forEach(l => {
-        if (member[l.key]) {
-            let label = ''; // No text label for most, just icon
-            activeLinks.push(`<a href="${member[l.key].startsWith('http') || l.key === 'email' ? '' : 'https://'}${l.key === 'email' ? 'mailto:' : ''}${member[l.key]}" target="_blank" style="color: var(--color-text-muted); font-size: 1.1rem;"><i class="${l.icon}"></i></a>`);
-        }
-    });
+    const academicMap = [
+        { key: 'google scholar', icon: 'fas fa-graduation-cap', label: 'Google Scholar' },
+        { key: 'dblp', icon: 'fas fa-book', label: 'DBLP' },
+        { key: 'orcid', icon: 'fab fa-orcid', label: 'ORCID' }
+    ];
 
-    const linksContainer = activeLinks.length > 0 ? `<div style="display: flex; gap: 0.8rem; justify-content: center; margin-top: auto; padding-top: 1rem;">${activeLinks.join('')}</div>` : '';
+    // Helper to generate social icon links (Icon only)
+    function generateSocialLinks(map) {
+        return map.filter(l => member[l.key]).map(l => {
+            const url = member[l.key].startsWith('http') ? member[l.key] : `https://${member[l.key]}`;
+            return `<a href="${url}" target="_blank" style="color: var(--color-text-muted); font-size: 1.1rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-accent)'" onmouseout="this.style.color='var(--color-text-muted)'"><i class="${l.icon}"></i></a>`;
+        }).join('');
+    }
 
+    // Helper to generate academic links (Icon + Text, Pill style)
+    function generateAcademicLinks(map) {
+        return map.filter(l => member[l.key]).map(l => {
+            const url = member[l.key].startsWith('http') ? member[l.key] : `https://${member[l.key]}`;
+            return `<a href="${url}" target="_blank" class="academic-link-item"><i class="${l.icon}"></i> ${l.label}</a>`;
+        }).join('');
+    }
+
+    const socialHtml = generateSocialLinks(socialMap);
+    const academicHtml = generateAcademicLinks(academicMap);
+
+    // 3. Email Handling
+    let emailHtml = '';
+    if (member.email) {
+        let emailLink = member.email.startsWith('mailto:') ? member.email : `mailto:${member.email}`;
+        emailHtml = `
+            <a href="${emailLink}" style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; text-decoration: none;" onmouseover="this.style.color='var(--color-accent)'" onmouseout="this.style.color='var(--color-text-muted)'">
+                <i class="fas fa-envelope"></i> <span>${member.email}</span>
+            </a>
+        `;
+    }
+
+    // Combine Links (Email -> Social -> Academic)
+    let linksSection = '';
+
+    // For Alumni, keep it simple (Icon only for academic links too? Or text? User said "like professor", usually means Text)
+    // But Alumni cards are smaller. Let's use simpler icons for Alumni to fit 4 per row, unless user asks otherwise.
+    // User said "Students' academic links should be like Professor". Implicitly Alumni might stay simple?
+    // Let's apply the text style to Students/Supporters only for now as they have more space.
 
     if (isAlumni) {
-        // Alumni Layout: Name (Year), Current (Orange), Links. Max 4 per row.
+        // Re-generate academic links as icons for Alumni to save space (Grid 4)
+        const academicHtmlAlumni = academicMap.filter(l => member[l.key]).map(l => {
+            const url = member[l.key].startsWith('http') ? member[l.key] : `https://${member[l.key]}`;
+            return `<a href="${url}" target="_blank" style="color: var(--color-text-muted); font-size: 1.1rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-accent)'" onmouseout="this.style.color='var(--color-text-muted)'"><i class="${l.icon}"></i></a>`;
+        }).join('');
+
+        linksSection = `
+            <div style="display: flex; gap: 0.8rem; justify-content: center; margin-top: auto; padding-top: 1rem;">
+                ${member.email ? `<a href="mailto:${member.email}" style="color: var(--color-text-muted);"><i class="fas fa-envelope"></i></a>` : ''}
+                ${socialHtml}
+                ${academicHtmlAlumni}
+            </div>
+        `;
+
         return `
         <div class="card" style="text-align: center; padding: 1.5rem;">
             <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${name} <span style="font-weight: normal; font-size: 0.9rem;">(${member.year})</span></h3>
             <p style="color: var(--color-accent); font-weight: 500; font-size: 0.95rem; margin-bottom: 0.5rem;">${member.current || ''}</p>
-            ${linksContainer}
+            ${linksSection}
         </div>
         `;
     } else {
-        // Student Layout: Image, Name, Interest (Orange), Intro, Links. Max 3 per row.
-        // Image handling
-        let imageHtml = '';
-        if (member.image && member.image.trim() !== '') {
-            imageHtml = `<img src="${member.image}" alt="${name}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; background: #cbd5e1;">`;
-        } else {
-            imageHtml = `<div style="width: 120px; height: 120px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem; display: inline-block;"></div>`;
-        }
-
-        const interest = isKr && member.interest_kr ? member.interest_kr : member.interest_en;
-        const intro = isKr && member.intro_kr ? member.intro_kr : member.intro_en;
+        // For Students/Supporters: Use Text style for Academic Links
+        // We need inline CSS for the pill style or reuse .academic-links from CSS
+        // style.css already has .academic-links a { ... pill style ... }
+        // We should wrap it in <div class="academic-links">
 
         return `
-        <div class="card" style="text-align: center; padding: 2rem; display: flex; flex-direction: column; align-items: center; height: 100%;">
+        <div class="card" style="text-align: center; padding: 2rem 1.5rem; display: flex; flex-direction: column; align-items: center; height: 100%;">
             ${imageHtml}
             <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">${name}</h3>
-            <p style="color: var(--color-accent); font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">${interest || ''}</p>
-            <p style="color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem; flex-grow: 1;">
-                ${intro || ''}
+            
+            <p style="color: var(--color-accent); font-weight: 600; font-size: 0.95rem; margin-bottom: ${member.intro_en ? '0.75rem' : '1.5rem'};">
+                ${isKr && member.interest_kr ? member.interest_kr : member.interest_en || ''}
             </p>
-            ${linksContainer}
+            
+            <p style="color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">
+                ${isKr && member.intro_kr ? member.intro_kr : member.intro_en || ''}
+            </p>
+
+            <div style="width: 100%; border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                ${emailHtml}
+                
+                ${socialHtml ? `<div class="social-links justify-center" style="margin-bottom: ${academicHtml ? '0.5rem' : '0'};">${socialHtml}</div>` : ''}
+                
+                ${academicHtml ? `<div class="academic-links justify-center" style="gap: 0.5rem; flex-wrap: wrap;">${academicHtml}</div>` : ''}
+            </div>
         </div>
         `;
     }
@@ -352,14 +427,14 @@ async function loadPublications(pageType) {
 
         // 데이터 필터링
         let filteredData = [];
-        const currentYear = new Date().getFullYear();
+        // const currentYear = new Date().getFullYear(); // 사용하지 않음
 
         if (pageType === 'conference') {
-            filteredData = rows.filter(row => row.type === 'Conference' && parseInt(row.year) >= 2020);
+            filteredData = rows.filter(row => row.type === 'Conference' && parseInt(row.year) >= RECENT_THRESHOLD_YEAR);
         } else if (pageType === 'journal') {
-            filteredData = rows.filter(row => row.type === 'Journal' && parseInt(row.year) >= 2020);
+            filteredData = rows.filter(row => row.type === 'Journal' && parseInt(row.year) >= RECENT_THRESHOLD_YEAR);
         } else if (pageType === 'former') {
-            filteredData = rows.filter(row => parseInt(row.year) <= 2019);
+            filteredData = rows.filter(row => parseInt(row.year) < RECENT_THRESHOLD_YEAR);
         }
 
         // 연도별 그룹화
@@ -391,6 +466,23 @@ async function loadPublications(pageType) {
         if (pageType === 'former') {
             renderFormerPage(filteredData, container);
         } else {
+            // 헤더 연도 동적 업데이트 (Conference/Journal)
+            if (pageType === 'conference') {
+                const header = document.getElementById('conference-header');
+                if (header) {
+                    header.setAttribute('data-lang-kr', `컨퍼런스 (${RECENT_THRESHOLD_YEAR}~)`);
+                    header.setAttribute('data-lang-en', `Conference (${RECENT_THRESHOLD_YEAR}~)`);
+                    updateElementText(header);
+                }
+            } else if (pageType === 'journal') {
+                const header = document.getElementById('journal-header');
+                if (header) {
+                    header.setAttribute('data-lang-kr', `저널 (${RECENT_THRESHOLD_YEAR}~)`);
+                    header.setAttribute('data-lang-en', `Journal (${RECENT_THRESHOLD_YEAR}~)`);
+                    updateElementText(header);
+                }
+            }
+
             renderNormalPage(years, groupedByYear, container);
         }
 
@@ -419,13 +511,28 @@ function renderFormerPage(data, container) {
     const confData = data.filter(row => row.type === 'Conference').sort((a, b) => b.year - a.year);
     const jourData = data.filter(row => row.type === 'Journal').sort((a, b) => b.year - a.year);
 
+    const formerYear = RECENT_THRESHOLD_YEAR - 1;
+
+    // Update Intro Text
+    const formerIntro = document.getElementById('former-intro-text');
+    if (formerIntro) {
+        formerIntro.setAttribute('data-lang-kr', `${formerYear}년 이하의 출판물 목록입니다.`);
+        formerIntro.setAttribute('data-lang-en', `List of publications up to ${formerYear}.`);
+
+        // 현재 언어에 맞게 텍스트 즉시 업데이트
+        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+        formerIntro.textContent = (currentLang === 'kr')
+            ? `${formerYear}년 이하의 출판물 목록입니다.`
+            : `List of publications up to ${formerYear}.`;
+    }
+
     let html = '';
 
     // Conference Section
     html += `
         <div style="margin-bottom: 4rem;">
             <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                Conference (~2019)
+                Conference (~${formerYear})
             </h2>
             <ul class="simple-list" style="list-style: none; padding: 0;">
                 ${confData.map(item => createSimpleListItem(item)).join('')}
@@ -437,7 +544,7 @@ function renderFormerPage(data, container) {
     html += `
         <div style="margin-bottom: 3rem;">
             <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                Journal (~2019)
+                Journal (~${formerYear})
             </h2>
             <ul class="simple-list" style="list-style: none; padding: 0;">
                 ${jourData.map(item => createSimpleListItem(item)).join('')}
