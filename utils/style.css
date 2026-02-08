@@ -62,10 +62,11 @@
 }
 
 body {
-    font-family: var(--font-body);
-    background-color: var(--color-bg);
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
     color: var(--color-text-main);
+    background-color: #ffffff;
     line-height: 1.6;
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -103,6 +104,7 @@ ul {
     margin: 0 auto;
     /* 가운데 정렬 */
     padding: 0 var(--spacing-md);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .section {
@@ -148,24 +150,32 @@ ul {
    [헤더 및 네비게이션 (Header & Nav)]
    상단 메뉴바 스타일입니다.
    ========================================================================== */
-/* ==========================================================================
-   [헤더 및 네비게이션 (Header & Nav)]
-   상단 메뉴바 스타일입니다.
-   ========================================================================== */
 .header {
     position: sticky;
-    /* 스크롤 내려도 상단에 고정 */
     top: 0;
     z-index: 1000;
+    background: transparent;
+    padding-bottom: 0;
+    /* 트랜지션 시작점 명시 */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-main-area {
     background: rgba(255, 255, 255, 0.9);
-    /* 반투명 배경 */
     backdrop-filter: blur(10px);
-    /* 배경 블러 효과 */
     border-bottom: 1px solid #cbd5e1;
-    /* 테두리 색상 조금 더 진하게 변경 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    /* 그림자 추가 */
     padding: 0.5rem 0;
+    position: relative;
+    z-index: 1001;
+    /* 서브메뉴가 이 아래로 나옴 */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 보조메뉴가 열렸을 때 전체 헤더 노출 영역 확장 (본문을 아래로 밀어냄) */
+.header.submenu-active {
+    padding-bottom: 3.2rem;
+    /* 서브메뉴의 실제 높이만큼 공간 확보 */
 }
 
 .header-top {
@@ -174,6 +184,7 @@ ul {
     justify-content: space-between;
     position: relative;
     padding-bottom: 0.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .lab-title {
@@ -181,21 +192,20 @@ ul {
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
     font-weight: 700;
     color: var(--color-primary);
     white-space: nowrap;
-}
-
-.nav-container {
-    display: none;
-    /* Deprecated class, ensure it's hidden or removed */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    visibility: visible;
 }
 
 .header-nav {
     display: flex;
     justify-content: center;
     padding-top: 0.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .logo {
@@ -214,18 +224,61 @@ ul {
 
 .nav-menu {
     display: flex;
-    /* 가로(수평) 배열 설정 (Horizontal Layout) */
-    gap: 2rem;
+    gap: clamp(1rem, 2.5vw, 2rem);
+    /* 드롭다운과 간격 통일 */
     align-items: center;
+    justify-content: center;
+    /* 명시적 중앙 정렬 */
+    width: 100%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes navItemFade {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .nav-link {
     display: inline-block;
-    width: 110px;
+    min-width: 90px;
+    /* 고정 너비 대신 최소 너비 사용 */
+    padding: 0.5rem 0.75rem;
+    /* 내부 패딩으로 크기 확보 */
     text-align: center;
     font-weight: 500;
     color: var(--color-text-muted);
-    font-size: 0.95rem;
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: navItemFade 0.5s ease forwards;
+    opacity: 0;
+}
+
+/* 메뉴 항목마다 약간의 지연 시간을 주어 더 고급스러운 느낌 부여 */
+.nav-menu li:nth-child(1) .nav-link {
+    animation-delay: 0.1s;
+}
+
+.nav-menu li:nth-child(2) .nav-link {
+    animation-delay: 0.15s;
+}
+
+.nav-menu li:nth-child(3) .nav-link {
+    animation-delay: 0.2s;
+}
+
+.nav-menu li:nth-child(4) .nav-link {
+    animation-delay: 0.25s;
+}
+
+.nav-menu li:nth-child(5) .nav-link {
+    animation-delay: 0.3s;
 }
 
 .nav-link:hover,
@@ -235,52 +288,79 @@ ul {
 }
 
 /* --- 드롭다운 메뉴 (Dropdown Menu) --- */
-/* 드롭다운 부모 요소 */
+/* 드롭다운 부모 요소 - 서브메뉴가 헤더 전체 너비를 차지하게 하기 위해 relative 제거 */
 .dropdown {
-    position: relative;
     display: inline-block;
 }
 
-/* 마우스 올렸을 때 나타나는 서브메뉴 박스 */
+/* 마우스 클릭 시 나타나는 서브메뉴 바 (Full-width Sub-nav Bar) */
 .dropdown-content {
-    display: none;
-    /* 평소에는 숨김 */
+    display: flex;
+    justify-content: center;
+    gap: clamp(1rem, 2.5vw, 2rem);
+    /* 메인 메뉴와 간격 통일 */
+    /* 화면 너비에 따라 간격 동적 조절 */
     position: absolute;
-    background-color: #ffffff;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
-    z-index: 1;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
-    padding: 0.5rem 0;
     top: 100%;
-    /* 메뉴 바로 아래 배치 */
-    left: 50%;
-    transform: translateX(-50%);
-    /* 가운데 정렬 보정 */
+    left: 0;
+    width: 100%;
+    /* 헤더 전체 너비 차지 */
+    background-color: var(--color-surface);
+    /* 약간의 배경색 차이로 구분 */
+    border-bottom: 1px solid var(--color-border);
+    z-index: 10;
+    /* 헤더 위로 */
+    padding: 0;
+    visibility: hidden;
+    /* 평소에는 숨김 */
+
+    /* 애니메이션 설정 (입체적인 펼침 효과) */
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-10px) scaleY(0.9);
+    transform-origin: top;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* 헤더와 동일하게 통일 */
 }
 
-/* 드롭다운 안의 링크들 */
+/* 활성화 상태 */
+.dropdown.active .dropdown-content {
+    max-height: 120px;
+    opacity: 1;
+    padding: 0.8rem 0;
+    transform: translateY(0) scaleY(1);
+    z-index: 999;
+    visibility: visible;
+}
+
+/* 드롭다운 안의 리스트 및 링크들 */
+.dropdown-content li {
+    list-style: none;
+}
+
 .dropdown-content li a {
     color: var(--color-text-main);
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem;
     text-decoration: none;
-    display: block;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    /* 줄바꿈 방지 */
+    font-size: clamp(0.85rem, 1.1vw, 0.95rem);
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
-/* 링크에 마우스 올렸을 때 */
-.dropdown-content li a:hover {
-    background-color: var(--color-surface);
+/* 링크에 마우스 올리거나 활성화 상태일 때 */
+.dropdown-content li a:hover,
+.dropdown-content li a.active {
     color: var(--color-accent);
 }
 
-/* 부모 메뉴(.dropdown)에 마우스 올리면 서브메뉴(.dropdown-content) 보임 */
+
+/* 부모 메뉴(.dropdown)에 마우스 올리면 서브메뉴(.dropdown-content) 보임 - 제거됨 (클릭 방식으로 변경) */
+/*
 .dropdown:hover .dropdown-content {
     display: block;
 }
+*/
 
 /* ==========================================================================
    [언어 선택 버튼 (Language Toggle)]
@@ -288,49 +368,110 @@ ul {
 .lang-toggle {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    position: relative;
     border: 1px solid var(--color-border);
     padding: 0.25rem;
     border-radius: var(--radius-full);
     background: var(--color-surface);
+    overflow: hidden;
+}
+
+/* 슬라이딩 배경 필 (Slider Pill) */
+.lang-slider {
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+    bottom: 0.25rem;
+    width: calc(50% - 0.25rem);
+    background-color: var(--color-accent);
+    border-radius: var(--radius-full);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+}
+
+/* EN 선택 시 오른쪽으로 이동 (수정됨) */
+.lang-toggle.en-active .lang-slider {
+    transform: translateX(100%);
 }
 
 /* =========================================
-   Grid System
+   Grid System (Ghost-Grid Centering)
    ========================================= */
 .grid-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
 }
 
 .grid-4 {
+    gap: 1.5rem;
+}
+
+/* grid-4는 더 많은 열을 위해 간격을 약간 줄임 */
+
+.grid-3,
+.grid-4 {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
+    justify-content: center;
+    /* 전체 칸을 중앙으로 (1~2명일 때 자동 중앙) */
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0 auto;
+    width: 100%;
+    /* 부모 안에서 중앙 정렬을 위해 100% 확보 */
 }
 
-/* Mobile Responsiveness for Grid */
-@media (max-width: 1024px) {
+/* 데스크탑: 3열(340px) / 4열(260px) 가상 박스 고정 */
+@media (min-width: 1201px) {
+    .grid-3 {
+        grid-template-columns: repeat(auto-fit, 340px);
+        max-width: 1084px;
+    }
+
     .grid-4 {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fit, 260px);
+        max-width: 1112px;
+        /* 4 * 260 + 3 * 24 (1.5rem gap) */
     }
 }
 
-@media (max-width: 768px) {
+/* 작은 데스크탑: Alumni(grid-4)는 3~4열 유연하게, Students(grid-3)는 2~3열 */
+@media (max-width: 1200px) and (min-width: 1025px) {
+    .grid-3 {
+        grid-template-columns: repeat(auto-fit, 320px);
+        max-width: 1024px;
+    }
+
+    .grid-4 {
+        grid-template-columns: repeat(auto-fit, 240px);
+        max-width: 1056px;
+        /* 4 * 240 + 3 * 32 */
+    }
+}
+
+/* 태블릿: 2열 정렬 */
+@media (max-width: 1024px) and (min-width: 601px) {
 
     .grid-3,
     .grid-4 {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(280px, 340px));
+        max-width: 712px;
+        /* 2 * 340 + 32 */
     }
 }
 
-@media (max-width: 480px) {
+/* 모바일/작은 태블릿: 1열 */
+@media (max-width: 600px) {
 
     .grid-3,
     .grid-4 {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(280px, 340px);
+        width: 100%;
+        max-width: 340px;
     }
+}
+
+.grid-3,
+.grid-4 {
+    max-width: 100%;
+    /* 부모 컨테이너(divider 등)를 절대 넘지 않음 */
 }
 
 .lang-btn {
@@ -340,19 +481,20 @@ ul {
     font-weight: 600;
     cursor: pointer;
     color: var(--color-text-muted);
-    transition: var(--transition);
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 2;
+    /* 배경보다 위에 위치 */
+    background: transparent !important;
+    border: none;
+    flex: 1;
+    text-align: center;
 }
 
 .lang-btn.active {
-    background-color: var(--color-accent);
-    /* 활성화된 언어 버튼 색상 (주황색) */
-    color: white;
+    color: white !important;
 }
 
-/* ==========================================================================
-   [메인 히어로 섹션 (main Section)]
-   홈페이지 가장 위의 큰 제목 부분입니다.
-   ========================================================================== */
 /* ==========================================================================
    [메인 히어로 섹션 (main Section)]
    홈페이지 가장 위의 큰 제목 부분입니다.
@@ -457,11 +599,17 @@ ul {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    padding: 2rem;
-    transition: var(--transition);
+    padding: clamp(1.5rem, 2.5vw, 2rem);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100%;
     display: flex;
     flex-direction: column;
+    max-width: 340px;
+    /* 카드가 너무 넓어지는 것을 방지 (황금 비율 유지) */
+    margin: 0;
+    /* 그리드 설정(justify-content)에 맡기고 마진은 제거 */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .card:hover {
@@ -471,6 +619,33 @@ ul {
     /* 그림자 진해짐 */
     border-color: var(--color-accent);
     /* 테두리가 포인트 색으로 변함 */
+}
+
+/* --- 출판물 전용 카드 (Publication Card) --- */
+/* 멤버용 일반 카드와 달리 가로로 긴 리스트 스타일을 유지합니다. */
+.publication-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 2rem;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: row;
+    /* 가로 배열 */
+    align-items: flex-start;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: none;
+    /* 너비 제한 해제하여 컨테이너 꽉 채움 */
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+}
+
+.publication-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-md);
+    transform: translateX(5px);
+    /* 옆으로 살짝 밀리는 효과 */
 }
 
 /* ==========================================================================
@@ -597,22 +772,91 @@ a.icon-link[href="#"] {
    ========================================================================== */
 @media (max-width: 1000px) {
     .lab-title {
-        display: none;
-        /* 제목이 로고/언어 버튼과 겹치지 않도록 너비가 좁아지면 숨김 */
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        /* 제목이 로고/언어 버튼과 겹치지 않도록 너비가 좁아지면 투명하게 숨김 */
     }
 }
 
 @media (max-width: 768px) {
+    .header-nav {
+        display: flex;
+        justify-content: center;
+        /* 기본은 중앙 정렬 */
+        padding: 0.5rem 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        width: 100%;
+    }
+
+    /* 슬라이드 가능한 너비 확보를 위해 overflow 발생 시 보정 */
+    .header-nav {
+        scrollbar-width: none;
+    }
+
+    /* UI 팁: 스크롤이 필요한 경우 왼쪽부터 보이게 유도 */
     .nav-menu {
-        display: none;
-        /* 모바일에서는 일단 메뉴를 숨김 (추후 JS로 토글 기능 추가 가능) */
+        display: flex;
+        gap: clamp(0.6rem, 2vw, 1rem);
+        /* 모바일에서도 동적으로 조절 */
+        padding: 0 1.5rem;
+        /* 양끝 잘림 방지용 여백 */
+        flex-wrap: nowrap;
+        min-width: max-content;
+    }
+
+    .nav-link {
+        width: auto;
+        /* !important 제거 */
+        min-width: 0;
+        /* 90px에서 0으로 부드럽게 전환 가능 */
+        padding: 0.5rem 0.2rem;
+        font-size: 1rem;
+        /* 모바일에서도 약간 키움 */
     }
 
     .main h1 {
         font-size: 2.5rem;
-        /* 제목 글자 크기 줄임 */
+    }
+
+    /* 모바일 서브 메뉴 적응형 스타일 */
+    .dropdown-content {
+        gap: clamp(0.5rem, 1.5vw, 0.8rem);
+        padding: 0.5rem 1.5rem;
+        /* 양끝 잘림 방지용 여백 */
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        justify-content: center;
+        /* 가능하면 중앙 정렬 유지 */
+    }
+
+    .dropdown-content::-webkit-scrollbar {
+        display: none;
+    }
+
+    .dropdown.active .dropdown-content {
+        padding: 0.6rem 1rem;
+        /* 모바일에서 세로 여백 살짝 조절 */
+    }
+
+    .dropdown-content li a {
+        font-size: 0.9rem;
+        /* 모바일용 주 메뉴와 균형을 맞춰 축소 */
+        white-space: nowrap;
+        /* 줄바꿈 방지하여 가로 스크롤 유도 */
+        padding: 0.4rem 0.2rem;
     }
 }
+
+/* 클릭으로 활성화된 드롭다운 스타일 - 중복 및 충돌 방지를 위해 제거 */
+/*
+.dropdown.active .dropdown-content {
+    display: block;
+}
+*/
 
 /* =========================================
    Toast Notification (for Copy)
@@ -685,4 +929,20 @@ a.icon-link[href="#"] {
         bottom: 0;
         opacity: 0;
     }
+}
+
+/* 언어 전환 시 내용 페이드 효과 (정교한 이동 추가) */
+.lang-content-fade {
+    opacity: 0 !important;
+    transform: translateY(10px) scale(0.98);
+}
+
+/* 전환 중인 요소들에만 특정 속성 트랜지션 적용 (전체 속성 all 대신 명시하여 리사이징 지연 방지) */
+.lang-transition-active {
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 제목 전용 등장 애니메이션 (나타날 때만) */
+.title-fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
 }

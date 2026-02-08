@@ -44,6 +44,7 @@ async function loadComponents() {
         initLanguage();
         setActiveNavLink();
         hideEmptyLinks();
+        initDropdownToggle();
 
     } catch (error) {
         console.error('Error loading components:', error);
@@ -58,53 +59,32 @@ function initLanguage() {
     const langElements = document.querySelectorAll('[data-lang-kr], [data-lang-en]');
 
     function setLanguage(lang) {
-        langBtns.forEach(btn => {
-            if (btn.dataset.lang === lang) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+        // 토글 버튼 애니메이션
+        document.querySelectorAll('.lang-toggle').forEach(container => {
+            container.classList.toggle('en-active', lang === 'en');
         });
+        langBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
 
+        // 내용 즉시 교체
         langElements.forEach(el => {
-            // 네비게이션 링크는 텍스트만 변경 (href 유지)
-            if (el.tagName === 'A' && el.classList.contains('nav-link')) {
-                if (lang === 'kr') {
-                    if (el.hasAttribute('data-lang-kr')) el.textContent = el.getAttribute('data-lang-kr');
+            const text = el.getAttribute(lang === 'kr' ? 'data-lang-kr' : 'data-lang-en');
+            if (text) {
+                if (el.tagName === 'A' && el.classList.contains('nav-link')) {
+                    el.textContent = text;
                 } else {
-                    if (el.hasAttribute('data-lang-en')) el.textContent = el.getAttribute('data-lang-en');
-                }
-                return; // 네비게이션 링크는 여기서 처리 끝
-            }
-
-            // 일반 요소 처리
-            if (lang === 'kr') {
-                if (el.hasAttribute('data-lang-kr')) {
-                    el.textContent = el.getAttribute('data-lang-kr');
+                    el.textContent = text;
                     el.style.display = '';
-                } else {
-                    el.style.display = 'none';
                 }
-            } else {
-                if (el.hasAttribute('data-lang-en')) {
-                    el.textContent = el.getAttribute('data-lang-en');
-                    el.style.display = '';
-                } else {
-                    el.style.display = 'none';
-                }
+            } else if (!el.classList.contains('nav-link')) {
+                el.style.display = 'none';
             }
         });
 
-        document.querySelectorAll('.lang-kr').forEach(el => {
-            el.style.display = (lang === 'kr') ? '' : 'none';
-        });
-        document.querySelectorAll('.lang-en').forEach(el => {
-            el.style.display = (lang === 'en') ? '' : 'none';
-        });
+        document.querySelectorAll('.lang-kr').forEach(el => el.style.display = (lang === 'kr' ? '' : 'none'));
+        document.querySelectorAll('.lang-en').forEach(el => el.style.display = (lang === 'en' ? '' : 'none'));
 
         localStorage.setItem('preferred-lang', lang);
 
-        // 멤버 페이지가 활성화된 경우, 언어 변경 시 카드 내용 다시 렌더링
         const pageType = document.body.getAttribute('data-page-type');
         if (pageType && ['students', 'alumni', 'supporters'].includes(pageType)) {
             renderMemberContent(pageType);
@@ -137,18 +117,58 @@ function updateElementText(el) {
 // ===========================================
 function setActiveNavLink() {
     const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-    const navLinks = document.querySelectorAll('.nav-link');
+    // 헤더 안의 모든 링크(메인 및 서브)를 탐색
+    const allLinks = document.querySelectorAll('.header-nav a');
 
-    navLinks.forEach(link => {
+    allLinks.forEach(link => {
         const linkPath = link.getAttribute('href');
         if (linkPath === currentPath) {
             link.classList.add('active');
-            // 드롭다운 메뉴의 경우 부모(출판)도 활성화
-            const parentDropdown = link.closest('.dropdown');
-            if (parentDropdown) {
-                const parentLink = parentDropdown.querySelector('.nav-link');
-                if (parentLink) parentLink.classList.add('active');
+
+            // 만약 현재 링크가 드롭다운 내부에 있다면, 부모 메인 메뉴도 활성화
+            const dropdown = link.closest('.dropdown');
+            if (dropdown) {
+                const parentNavLink = dropdown.querySelector('.nav-link');
+                if (parentNavLink) parentNavLink.classList.add('active');
             }
+        }
+    });
+}
+
+// ===========================================
+// 3.1. 드롭다운 토글 기능 (Dropdown Click Toggle)
+// ===========================================
+function initDropdownToggle() {
+    const dropdowns = document.querySelectorAll('.dropdown');
+    const header = document.querySelector('.header');
+
+    dropdowns.forEach(dropdown => {
+        const link = dropdown.querySelector('.nav-link');
+        if (!link) return;
+
+        link.addEventListener('click', (e) => {
+            if (!dropdown.classList.contains('active')) {
+                e.preventDefault();
+
+                // 다른 열려있는 드롭다운 닫기
+                dropdowns.forEach(d => d.classList.remove('active'));
+
+                dropdown.classList.add('active');
+                header.classList.add('submenu-active');
+            } else {
+                e.preventDefault();
+                dropdown.classList.remove('active');
+                header.classList.remove('submenu-active');
+            }
+        });
+    });
+
+    // 외부 클릭 시 드롭다운 닫기
+    window.addEventListener('click', (e) => {
+        // .dropdown 클래스 내부 클릭이 아니면서, .lang-toggle(언어 전환) 클릭도 아닐 때만 닫음
+        if (!e.target.closest('.dropdown') && !e.target.closest('.lang-toggle')) {
+            dropdowns.forEach(d => d.classList.remove('active'));
+            header.classList.remove('submenu-active');
         }
     });
 }
@@ -289,6 +309,7 @@ function renderSupportersPage(rows, container, isKr) {
     const supporters = rows.filter(r => r.Type === 'Supporter');
     let html = '';
     if (supporters.length > 0) {
+        // Supporters도 Students처럼 Ghost-Grid(grid-3) 적용
         html += createMemberGrid(supporters, isKr, 'grid-3', false);
     }
     container.innerHTML = html;
@@ -594,7 +615,7 @@ function createPublicationCard(item) {
     }
 
     return `
-    <div class="card" style="padding: 1.5rem; flex-direction: row; align-items: flex-start; gap: 1rem;">
+    <div class="publication-card">
         <div style="flex: 1;">
             <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${item.title}</h3>
             <p style="color: var(--color-text-muted); margin-bottom: 0.5rem; font-size: 0.95rem;">
