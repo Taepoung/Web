@@ -421,26 +421,28 @@ ul {
 /* 데스크탑: 3열(340px) / 4열(260px) 가상 박스 고정 */
 @media (min-width: 1201px) {
     .grid-3 {
-        grid-template-columns: repeat(auto-fit, 340px);
+        grid-template-columns: repeat(3, 340px);
+        /* 3열 고정 */
         max-width: 1084px;
     }
 
     .grid-4 {
-        grid-template-columns: repeat(auto-fit, 260px);
+        grid-template-columns: repeat(4, 260px);
+        /* 4열 고정 */
         max-width: 1112px;
         /* 4 * 260 + 3 * 24 (1.5rem gap) */
     }
 }
 
-/* 작은 데스크탑: Alumni(grid-4)는 3~4열 유연하게, Students(grid-3)는 2~3열 */
+/* 작은 데스크탑: 박스 크기 조절하여 4열/3열 유지 시도 */
 @media (max-width: 1200px) and (min-width: 1025px) {
     .grid-3 {
-        grid-template-columns: repeat(auto-fit, 320px);
+        grid-template-columns: repeat(3, 320px);
         max-width: 1024px;
     }
 
     .grid-4 {
-        grid-template-columns: repeat(auto-fit, 240px);
+        grid-template-columns: repeat(4, 240px);
         max-width: 1056px;
         /* 4 * 240 + 3 * 32 */
     }
@@ -451,7 +453,7 @@ ul {
 
     .grid-3,
     .grid-4 {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 340px));
+        grid-template-columns: repeat(2, minmax(280px, 340px));
         max-width: 712px;
         /* 2 * 340 + 32 */
     }
