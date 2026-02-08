@@ -20,200 +20,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body>
+<body data-page-type="students">
     <!-- [Header] -->
     <div id="header-placeholder"></div>
 
     <!-- 
       [Students/Researchers Section] 
     -->
-    <section class="section" style="background: white;" id="students"> <!-- id 추�??? ?�기�??�동 -->
+    <section class="section" style="background: white;" id="students">
         <div class="container">
             <h2 data-lang-kr="연구원" data-lang-en="Researchers">연구원</h2>
 
-            <!-- 0. Post-Doc -->
-            <h3 style="margin-top: 3rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;"
-                data-lang-kr="박사 후과정" data-lang-en="Post-Doc">박사 후과정</h3>
-            <div class="grid-3">
-                <!-- Member Card (Post-Doc) -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Researcher Name</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">Post-Doc</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Research Topic
-                    </p>
-
-                    <div class="social-links justify-center">
-                        <a href="mailto:email@example.com"><i class="fas fa-envelope"></i></a>
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-threads"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
+            <div id="member-list">
+                <!-- Data loaded from CSV via script.js -->
+                <p style="color: var(--color-text-muted);">Loading researchers...</p>
             </div>
-
-            <!-- 1. Ph.D. Students -->
-            <h3 style="margin-top: 3rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;"
-                data-lang-kr="박사 과정" data-lang-en="Ph.D. Students">박사 과정</h3>
-            <div class="grid-3">
-                <!-- Member Card (Ph.D.) -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Researcher Name</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">Ph.D. Candidate</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Generative
-                        Models, NLP</p>
-
-                    <div class="social-links justify-center">
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-threads"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. Master's Students -->
-            <h3 style="margin-top: 3rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;"
-                data-lang-kr="석사 과정" data-lang-en="Master's Students">석사 과정</h3>
-            <div class="grid-3">
-                <!-- Member Card (M.S.) -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Researcher Name</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">M.S. Student</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Reinforcement
-                        Learning</p>
-
-                    <div class="social-links justify-center">
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-threads"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Researcher Name</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">M.S. Student</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Data Mining</p>
-
-                    <div class="social-links justify-center">
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-threads"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. Undergraduate Students -->
-            <h3 style="margin-top: 3rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;"
-                data-lang-kr="학부생 연구원" data-lang-en="Undergraduate Students">학부생 연구원</h3>
-            <div class="grid-3">
-                <!-- Member Card (Undergrad) Placeholder -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Student Name</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">Undergraduate</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Research Interest
-                    </p>
-
-                    <div class="social-links justify-center">
-                        <a href="mailto:email@example.com"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-threads"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. Interns -->
-            <h3 style="margin-top: 3rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;"
-                data-lang-kr="인턴" data-lang-en="Interns">인턴</h3>
-            <div class="grid-3">
-                <!-- Member Card (Intern) Placeholder -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Intern Name</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">Intern</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Project Topic</p>
-
-                    <div class="social-links justify-center">
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-threads"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </section>
 
-    <!-- [Footer] -->
+    <!-- [footer] -->
     <div id="footer-placeholder"></div>
 
     <script src="utils/script.js"></script>

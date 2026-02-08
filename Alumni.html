@@ -14,11 +14,13 @@
     <title>Bidirectional AI-Software Engineering Lab</title>
     <!-- CSS -->
     <link rel="stylesheet" href="utils/style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body>
+<body data-page-type="alumni">
     <!-- [Header] -->
     <div id="header-placeholder"></div>
 
@@ -31,173 +33,14 @@
                 우리 연구실을 거쳐간 자랑스러운 졸업생들입니다.
             </p>
 
-            <!-- 박사 졸업생(Ph.D.) -->
-            <h2
-                style="font-size: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                Ph.D.</h2>
-            <div class="grid-3" style="margin-bottom: 3rem;">
-                <!-- Alumni Card 1 -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Dr. Gildong Hong</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">Ph.D. (2023)</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Current: Research
-                        Scientist at Google</p>
-
-                    <div class="social-links justify-center">
-                        <a href="mailto:email@example.com"><i class="fas fa-envelope"></i></a>
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-
-                <!-- Alumni Card 2 -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Dr. Chulsoo Kim</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">Ph.D. (2022)</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Current:
-                        Assistant Professor at Hankook Univ.</p>
-
-                    <div class="social-links justify-center">
-                        <a href="mailto:email@example.com"><i class="fas fa-envelope"></i></a>
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
+            <div id="member-list">
+                <!-- Data loaded from CSV via script.js -->
+                <p style="color: var(--color-text-muted);">Loading alumni...</p>
             </div>
-
-            <!-- 석사 졸업생(M.S.) -->
-            <h2
-                style="font-size: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                M.S.</h2>
-            <div class="grid-3">
-                <!-- Alumni Card 3 -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Younghee Park</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">M.S. (2023)</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Current: Software
-                        Engineer at Naver</p>
-
-                    <div class="social-links justify-center">
-                        <a href="mailto:email@example.com"><i class="fas fa-envelope"></i></a>
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-
-                <!-- Alumni Card 4 -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Minsoo Lee</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">M.S. (2022)</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Current: Ph.D.
-                        Student at KAIST</p>
-
-                    <div class="social-links justify-center">
-                        <a href="mailto:email@example.com"><i class="fas fa-envelope"></i></a>
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 학부 졸업생(Undergraduate) -->
-            <h2
-                style="font-size: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                Undergraduate</h2>
-            <div class="grid-3" style="margin-bottom: 3rem;">
-                <!-- Alumni Card 5 -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Student Name</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">B.S. (2023)</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Current: Graduate
-                        Student</p>
-
-                    <div class="social-links justify-center">
-                        <a href="mailto:email@example.com"><i class="fas fa-envelope"></i></a>
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 인턴 (Former Interns) -->
-            <h2
-                style="font-size: 1.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                Former Interns</h2>
-            <div class="grid-3">
-                <!-- Alumni Card 6 -->
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Intern Name</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">Intern (Winter
-                        2023)</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Current:
-                        Undergraduate Student</p>
-
-                    <div class="social-links justify-center">
-                        <a href="mailto:email@example.com"><i class="fas fa-envelope"></i></a>
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </section>
 
-    <!-- [Footer] -->
+    <!-- [footer] -->
     <div id="footer-placeholder"></div>
 
     <script src="utils/script.js"></script>

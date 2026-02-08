@@ -14,15 +14,16 @@
     <title>Bidirectional AI-Software Engineering Lab</title>
     <!-- CSS -->
     <link rel="stylesheet" href="utils/style.css">
-    <!-- Font Awesome (for icons) -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body>
+<body data-page-type="supporters">
     <!-- [Header] -->
     <div id="header-placeholder"></div>
+
     <!-- 
       [Supporters Section]
     -->
@@ -31,37 +32,14 @@
             <h2 data-lang-kr="서포터즈" data-lang-en="Supporters">서포터즈</h2>
             <p style="color: var(--color-text-muted); margin-bottom: 2rem;">연구실을 도와주는 고마운 분들입니다.</p>
 
-            <div class="grid-3">
-                <div class="card" style="text-align: center; align-items: center;">
-                    <div
-                        style="width: 100px; height: 100px; background: #cbd5e1; border-radius: 50%; margin-bottom: 1rem;">
-                    </div>
-                    <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">Supporter Name</h3>
-                    <p style="color: var(--color-accent); font-size: 0.9rem; margin-bottom: 0.5rem;">Admin Staff</p>
-                    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Lab
-                        Administration</p>
-
-                    <div class="social-links justify-center">
-                        <a href="mailto:email@example.com"><i class="fas fa-envelope"></i></a>
-                        <a href="#" target="_blank"><i class="fas fa-home"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-threads"></i></a>
-                    </div>
-                    <!-- Academic Links -->
-                    <div class="academic-links justify-center" style="justify-content: center;">
-                        <a href="#" target="_blank"><i class="fas fa-graduation-cap"></i> Scholar</a>
-                        <a href="#" target="_blank"><i class="fas fa-book"></i> DBLP</a>
-                        <a href="#" target="_blank"><i class="fab fa-orcid"></i> ORCID</a>
-                    </div>
-                </div>
+            <div id="member-list">
+                <!-- Data loaded from CSV via script.js -->
+                <p style="color: var(--color-text-muted);">Loading supporters...</p>
             </div>
         </div>
     </section>
 
-    <!-- [Footer] -->
+    <!-- [footer] -->
     <div id="footer-placeholder"></div>
 
     <script src="utils/script.js"></script>

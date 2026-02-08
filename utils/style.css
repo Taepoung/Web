@@ -295,6 +295,44 @@ ul {
     background: var(--color-surface);
 }
 
+/* =========================================
+   Grid System
+   ========================================= */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+/* Mobile Responsiveness for Grid */
+@media (max-width: 1024px) {
+    .grid-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+
+    .grid-3,
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+
+    .grid-3,
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
 .lang-btn {
     padding: 0.25rem 0.75rem;
     border-radius: var(--radius-full);
@@ -446,6 +484,22 @@ ul {
     /* 소셜 링크와의 간격 */
 }
 
+/* 아이콘 버튼 (BibTeX Copy 등) */
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    font-size: 1.2rem;
+    padding: 0;
+    transition: var(--transition);
+}
+
+.icon-btn:hover {
+    color: var(--color-accent);
+    transform: translateY(-2px);
+}
+
 .academic-links a {
     color: var(--color-text-muted);
     font-size: 0.85rem;
@@ -485,5 +539,78 @@ a.icon-link[href="#"] {
     .main h1 {
         font-size: 2.5rem;
         /* 제목 글자 크기 줄임 */
+    }
+}
+
+/* =========================================
+   Toast Notification (for Copy)
+   ========================================= */
+.toast {
+    visibility: hidden;
+    min-width: 200px;
+    margin-left: -100px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 10px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    bottom: 30px;
+    font-size: 14px;
+}
+
+.toast.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+@keyframes fadein {
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadeout {
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
+}
+
+@keyframes fadeout {
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+
+    to {
+        bottom: 0;
+        opacity: 0;
     }
 }
