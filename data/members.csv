@@ -1,6 +1,11 @@
 Type,image,name_kr,name_en,interest_kr,interest_en,intro_kr,intro_en,email,website,github,linkedin,instagram,facebook,thread,google scholar,dblp,orcid,current,year
-Post-Doc,data/members/avatar_placeholder.png,홍길동,Gildong Hong,소프트웨어 공학,Software Engineering,안녕하세요. 홍길동입니다.,Hello, I am Gildong Hong.,email@example.com,https://homepage.com,github_id,linkedin_id,insta_id,fb_id,thread_id,scholar_id,dblp_id,orcid_id,,2024
-Ph.D.,data/members/avatar_placeholder.png,김철수,Chulsoo Kim,생성 모델; NLP,Generative Models; NLP,AI 연구를 하고 있습니다.,I am researching AI.,email@example.com,,github_id,,,,,,scholar_id,,,2024
-Alumni-Ph.D.,,,Dr. Park,,,,,,,,,linkedin_id,,,,,,Google,2023
-Alumni-M.S.,,,Master Choi,,,,,,,,,linkedin_id,,,,,,Naver,2022
-Supporter,data/members/avatar_placeholder.png,김서포터,Supporter Kim,연구실 행정,Lab Admin,행정 업무를 담당합니다.,I handle lab administration.,email@example.com,,,,,,,,,,,2023
+Post-Doc,,홍길동,Gil-dong Hong,소프트웨어 공학,Software Engineering,안녕하세요. 소프트웨어 공학을 연구하는 홍길동입니다.,Hello. I am Gil-dong Hong researching SE.,gdhong@dgist.ac.kr,,,,,,,,,,,
+Ph.D.,,이성계,Seong-gye Yi,컴파일러 최적화,Compiler Optimization,연구실의 첫 번째 박사 과정 학생입니다.,The first Ph.D. student in our lab.,sgyi@dgist.ac.kr,,,,,,,,,,,
+M.S.,,강감찬,Gam-chan Kang,정적 분석,Static Analysis,정적 분석 도구의 효율성을 연구합니다.,Researching efficiency of static analysis tools.,gckang@dgist.ac.kr,,,,,,,,,,,
+Undergraduate,,유관순,Gwan-sun Yu,테스트 자동화,Test Automation,학부 연구생으로서 테스트 자동화를 공부합니다.,Studying test automation as an undergrad.,gsyu@dgist.ac.kr,,,,,,,,,,,
+Intern,,안중근,Jung-geun Ahn,코드 임베딩,Code Embedding,겨울 방학 연구 인턴 참여 중입니다.,Participating as a winter research intern.,jgahn@dgist.ac.kr,,,,,,,,,,,
+Alumni-Ph.D.,,세종대왕,Sejong the Great,,,,,,,,,,,,,,,,
+Alumni-M.S.,,장영실,Yeong-sil Jang,,,,,,,,,,,,,,,,
+Alumni-Undergraduate,,허준,Jun Heo,,,,,,,,,,,,,,,,
+Alumni-Intern,,신사임당,Saimdang Shin,,,,,,,,,,,,,,,,
+Supporter,,논개,Nongae,행정 지원,Admin Support,연구실의 원활한 운영을 돕고 있습니다.,Supporting the smooth operation of the lab.,nongae@dgist.ac.kr,,,,,,,,,,,

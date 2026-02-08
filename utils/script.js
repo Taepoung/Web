@@ -222,11 +222,18 @@ async function loadMembers(pageType) {
 
 function renderMemberContent(pageType) {
     const container = document.getElementById('member-list');
-    if (!container || allMemberRows.length === 0) return;
+    if (!container) return;
 
     // 현재 언어 확인
     const currentLang = localStorage.getItem('preferred-lang') || 'kr';
     const isKr = currentLang === 'kr';
+
+    if (allMemberRows.length === 0) {
+        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+            ${isKr ? '등록된 구성원이 없습니다.' : 'No members found.'}
+        </p>`;
+        return;
+    }
 
     if (pageType === 'students') {
         renderStudentsPage(allMemberRows, container, isKr);
@@ -235,6 +242,13 @@ function renderMemberContent(pageType) {
     } else if (pageType === 'supporters') {
         renderSupportersPage(allMemberRows, container, isKr);
     }
+
+    // 결과가 비어있는지 확인 (필터링 후 아무것도 없는 경우)
+    if (container.innerHTML.trim() === '') {
+        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+            ${isKr ? '해당하는 구성원이 없습니다.' : 'No members found for this category.'}
+        </p>`;
+    }
 }
 
 function renderStudentsPage(rows, container, isKr) {
@@ -242,13 +256,15 @@ function renderStudentsPage(rows, container, isKr) {
     const phds = rows.filter(r => r.Type === 'Ph.D.');
     const masters = rows.filter(r => r.Type === 'M.S.');
     const undergrads = rows.filter(r => r.Type === 'Undergraduate');
+    const interns = rows.filter(r => r.Type === 'Intern');
 
     let html = '';
 
     if (postDocs.length > 0) html += createMemberSection(isKr ? '박사 후과정' : 'Post-Doc', postDocs, isKr, 'grid-3');
     if (phds.length > 0) html += createMemberSection(isKr ? '박사 과정' : 'Ph.D. Students', phds, isKr, 'grid-3');
     if (masters.length > 0) html += createMemberSection(isKr ? '석사 과정' : "Master's Students", masters, isKr, 'grid-3');
-    if (undergrads.length > 0) html += createMemberSection(isKr ? '학부 연구생' : 'Undergraduate Interns', undergrads, isKr, 'grid-3');
+    if (undergrads.length > 0) html += createMemberSection(isKr ? '학부 연구생' : 'Undergraduate Students', undergrads, isKr, 'grid-3');
+    if (interns.length > 0) html += createMemberSection(isKr ? '연구 인턴' : 'Research Interns', interns, isKr, 'grid-3');
 
     container.innerHTML = html;
 }
@@ -257,12 +273,14 @@ function renderAlumniPage(rows, container, isKr) {
     const phdAlumni = rows.filter(r => r.Type === 'Alumni-Ph.D.');
     const msAlumni = rows.filter(r => r.Type === 'Alumni-M.S.');
     const underAlumni = rows.filter(r => r.Type === 'Alumni-Undergraduate');
+    const internAlumni = rows.filter(r => r.Type === 'Alumni-Intern');
 
     let html = '';
 
-    if (phdAlumni.length > 0) html += createMemberSection('Ph.D.', phdAlumni, isKr, 'grid-4', true);
-    if (msAlumni.length > 0) html += createMemberSection('M.S.', msAlumni, isKr, 'grid-4', true);
-    if (underAlumni.length > 0) html += createMemberSection('B.S.', underAlumni, isKr, 'grid-4', true);
+    if (phdAlumni.length > 0) html += createMemberSection(isKr ? '졸업생 (박사)' : 'Alumni (Ph.D.)', phdAlumni, isKr, 'grid-4', true);
+    if (msAlumni.length > 0) html += createMemberSection(isKr ? '졸업생 (석사)' : 'Alumni (M.S.)', msAlumni, isKr, 'grid-4', true);
+    if (underAlumni.length > 0) html += createMemberSection(isKr ? '졸업생 (학부)' : 'Alumni (Undergraduate)', underAlumni, isKr, 'grid-4', true);
+    if (internAlumni.length > 0) html += createMemberSection(isKr ? '수료생 (연구 인턴)' : 'Alumni (Research Interns)', internAlumni, isKr, 'grid-4', true);
 
     container.innerHTML = html;
 }
@@ -271,7 +289,6 @@ function renderSupportersPage(rows, container, isKr) {
     const supporters = rows.filter(r => r.Type === 'Supporter');
     let html = '';
     if (supporters.length > 0) {
-        // Supporters use grid-3 similar to students
         html += createMemberGrid(supporters, isKr, 'grid-3', false);
     }
     container.innerHTML = html;
@@ -425,9 +442,12 @@ async function loadPublications(pageType) {
         const container = document.getElementById('publication-list');
         if (!container) return;
 
+        // 현재 언어 확인
+        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+        const isKr = currentLang === 'kr';
+
         // 데이터 필터링
         let filteredData = [];
-        // const currentYear = new Date().getFullYear(); // 사용하지 않음
 
         if (pageType === 'conference') {
             filteredData = rows.filter(row => row.type === 'Conference' && parseInt(row.year) >= RECENT_THRESHOLD_YEAR);
@@ -435,6 +455,13 @@ async function loadPublications(pageType) {
             filteredData = rows.filter(row => row.type === 'Journal' && parseInt(row.year) >= RECENT_THRESHOLD_YEAR);
         } else if (pageType === 'former') {
             filteredData = rows.filter(row => parseInt(row.year) < RECENT_THRESHOLD_YEAR);
+        }
+
+        if (filteredData.length === 0) {
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+                ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
+            </p>`;
+            return;
         }
 
         // 연도별 그룹화
@@ -447,24 +474,9 @@ async function loadPublications(pageType) {
         // 연도 내림차순 정렬
         const years = Object.keys(groupedByYear).sort((a, b) => b - a);
 
-        let html = '';
-        years.forEach(year => {
-            // 연도 헤더 (Former 페이지는 디자인이 다를 수 있음)
-            if (pageType === 'former') {
-                // Former 페이지는 연도별 헤더 없이 리스트로 나열하거나, 
-                // 기존 디자인에 맞춰 연도 헤더를 추가할 수 있습니다.
-                // 여기서는 기존 'Conference (~2019)' 헤더 아래 연도별로 묶지 않고 플랫하게 보여주기도 하지만,
-                // 데이터가 많으므로 연도별로 보여주는 것이 좋습니다.
-                // 다만 사용자의 요청에 따라 'Conference'와 'Journal' 섹션이 분리되어 있었습니다.
-                // Former 페이지는 별도 처리가 필요할 수 있습니다.
-            } else {
-                // html += `<h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem; margin-top: 3rem;">${year}</h2>`;
-            }
-        });
-
         // Former 페이지의 경우 Conference/Journal 섹션 분리가 필요합니다.
         if (pageType === 'former') {
-            renderFormerPage(filteredData, container);
+            renderFormerPage(filteredData, container, isKr);
         } else {
             // 헤더 연도 동적 업데이트 (Conference/Journal)
             if (pageType === 'conference') {
@@ -483,31 +495,36 @@ async function loadPublications(pageType) {
                 }
             }
 
-            renderNormalPage(years, groupedByYear, container);
+            renderNormalPage(years, groupedByYear, container, isKr);
         }
 
     } catch (error) {
         console.error('Error loading publications:', error);
+        const container = document.getElementById('publication-list');
+        if (container) {
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">Error loading data.</p>`;
+        }
     }
 }
 
-function renderNormalPage(years, groupedByYear, container) {
+function renderNormalPage(years, groupedByYear, container, isKr) {
     let html = '';
     years.forEach(year => {
-        // 연도 헤더?? 필요없으면 제거 가능, 하지만 보통 연도별 구분이 깔끔함.
-        // 사용자의 기존 디자인에는 연도 헤더가 없었고 2025, 2024 주석만 있었음.
-        // 하지만 자동화된 리스트는 연도 헤더가 있는 게 보기 좋습니다.
-        // 우선 기존 디자인처럼 카드만 나열하되, 최신순이므로 자연스럽게 정렬됩니다.
-
         groupedByYear[year].forEach(item => {
             html += createPublicationCard(item);
         });
     });
-    container.innerHTML = `<div style="display: flex; flex-direction: column; gap: 1rem;">${html}</div>`;
+
+    if (html === '') {
+        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+            ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
+        </p>`;
+    } else {
+        container.innerHTML = `<div style="display: flex; flex-direction: column; gap: 1rem;">${html}</div>`;
+    }
 }
 
-function renderFormerPage(data, container) {
-    // Conference (~2019)와 Journal (~2019) 분리 필요
+function renderFormerPage(data, container, isKr) {
     const confData = data.filter(row => row.type === 'Conference').sort((a, b) => b.year - a.year);
     const jourData = data.filter(row => row.type === 'Journal').sort((a, b) => b.year - a.year);
 
@@ -518,39 +535,45 @@ function renderFormerPage(data, container) {
     if (formerIntro) {
         formerIntro.setAttribute('data-lang-kr', `${formerYear}년 이하의 출판물 목록입니다.`);
         formerIntro.setAttribute('data-lang-en', `List of publications up to ${formerYear}.`);
+        updateElementText(formerIntro);
+    }
 
-        // 현재 언어에 맞게 텍스트 즉시 업데이트
-        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
-        formerIntro.textContent = (currentLang === 'kr')
-            ? `${formerYear}년 이하의 출판물 목록입니다.`
-            : `List of publications up to ${formerYear}.`;
+    if (confData.length === 0 && jourData.length === 0) {
+        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+            ${isKr ? '보관된 논문이 없습니다.' : 'No archived publications found.'}
+        </p>`;
+        return;
     }
 
     let html = '';
 
     // Conference Section
-    html += `
-        <div style="margin-bottom: 4rem;">
-            <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                Conference (~${formerYear})
-            </h2>
-            <ul class="simple-list" style="list-style: none; padding: 0;">
-                ${confData.map(item => createSimpleListItem(item)).join('')}
-            </ul>
-        </div>
-    `;
+    if (confData.length > 0) {
+        html += `
+            <div style="margin-bottom: 4rem;">
+                <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+                    Conference (~${formerYear})
+                </h2>
+                <ul class="simple-list" style="list-style: none; padding: 0;">
+                    ${confData.map(item => createSimpleListItem(item)).join('')}
+                </ul>
+            </div>
+        `;
+    }
 
     // Journal Section
-    html += `
-        <div style="margin-bottom: 3rem;">
-            <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                Journal (~${formerYear})
-            </h2>
-            <ul class="simple-list" style="list-style: none; padding: 0;">
-                ${jourData.map(item => createSimpleListItem(item)).join('')}
-            </ul>
-        </div>
-    `;
+    if (jourData.length > 0) {
+        html += `
+            <div style="margin-bottom: 3rem;">
+                <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+                    Journal (~${formerYear})
+                </h2>
+                <ul class="simple-list" style="list-style: none; padding: 0;">
+                    ${jourData.map(item => createSimpleListItem(item)).join('')}
+                </ul>
+            </div>
+        `;
+    }
 
     container.innerHTML = html;
 }
