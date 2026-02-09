@@ -10,6 +10,9 @@
 // 예: 2020으로 설정하면, 2020년 포함 이후는 최신, 2019년 이전은 Former로 분류됩니다.
 const RECENT_THRESHOLD_YEAR = 2020;
 
+// [News] 최신 소식 페이지에 표시할 뉴스 개수 (0 = 제한 없음)
+const LATEST_NEWS_COUNT = 20;
+
 
 // ===========================================
 // 0. 헤더/푸터 동적 로딩 (Dynamic Loading)
@@ -86,8 +89,22 @@ function initLanguage() {
         localStorage.setItem('preferred-lang', lang);
 
         const pageType = document.body.getAttribute('data-page-type');
-        if (pageType && ['students', 'alumni', 'supporters'].includes(pageType)) {
-            renderMemberContent(pageType);
+        if (pageType) {
+            // Member pages
+            if (['students', 'alumni', 'supporters'].includes(pageType)) {
+                renderMemberContent(pageType);
+            }
+            // News pages & Home page (for Recent News)
+            else if (['news-latest', 'news-research', 'news-other'].includes(pageType)) {
+                loadNews(pageType);
+            }
+            else if (pageType === 'home') {
+                loadNews('home');
+            }
+            // Publication pages
+            else if (['conference', 'journal', 'former'].includes(pageType)) {
+                loadPublications(pageType);
+            }
         }
     }
 
@@ -201,20 +218,279 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 
 
+
+// ===========================================
+// [Main Entry Point] DOMContentLoaded
+// ===========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 0. 헤더/푸터 로드 (가장 먼저 실행)
+    // 0. 헤더/푸터 로드 (가장 먼저 실행) - loadComponents() 내부에서 언어 설정 등 초기화
     loadComponents();
 
+    // 1. 스크롤 애니메이션 옵저버 등록 (.fade-in 클래스 요소들)
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-    // 페이지별 출판물 로드 (data-page-type 속성 확인)
+    // 2. 페이지 타입에 따른 데이터 로딩 분기 (data-page-type 속성 확인)
     const pageType = document.body.getAttribute('data-page-type');
     if (pageType) {
+        // [출판물 페이지] Conference, Journal, Former
         if (['conference', 'journal', 'former'].includes(pageType)) {
             loadPublications(pageType);
-        } else if (['students', 'alumni', 'supporters'].includes(pageType)) {
+        }
+        // [구성원 페이지] Professor(없음), Students, Alumni, Supporters
+        else if (['students', 'alumni', 'supporters'].includes(pageType)) {
             loadMembers(pageType);
         }
+        // [소식 페이지] Latest, Research, Other
+        else if (['news-latest', 'news-research', 'news-other'].includes(pageType)) {
+            loadNews(pageType);
+        }
+        // [메인 페이지] Home (Recent News 4 items)
+        else if (pageType === 'home') {
+            loadNews('home');
+        }
+    }
+});
+
+// ===========================================
+// News Loading
+// ===========================================
+// ===========================================
+// News Loading & Modal
+// ===========================================
+async function loadNews(pageType) {
+    try {
+        const response = await fetch('data/news.csv');
+        const text = await response.text();
+        const rows = parseCSV(text);
+
+        const container = document.getElementById('news-list');
+        // For 'home' page, we use 'recent-news-list', so 'news-list' might be null.
+        if (!container && pageType !== 'home') return;
+
+        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+        const isKr = currentLang === 'kr';
+
+        // Filter based on pageType
+        let filteredRows = [];
+        let targetContainer = container;
+
+        if (pageType === 'news-latest') {
+            // Latest shows all news items regardless of type
+            filteredRows = rows;
+        } else if (pageType === 'news-research') {
+            filteredRows = rows.filter(r => r.type && r.type.toLowerCase() === 'research');
+        } else if (pageType === 'news-other') {
+            filteredRows = rows.filter(r => r.type && r.type.toLowerCase() === 'other');
+        } else if (pageType === 'home') {
+            // Home page: Show all news, but limited to 4 items
+            // But we need to target a different container
+            targetContainer = document.getElementById('recent-news-list');
+            if (!targetContainer) return; // Should not happen if HTML is correct
+            filteredRows = rows;
+        } else {
+            filteredRows = rows;
+        }
+
+        if (filteredRows.length === 0) {
+            targetContainer.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+                ${isKr ? '등록된 소식이 없습니다.' : 'No news found.'}
+            </p>`;
+            return;
+        }
+
+        // Sort by date descending (assuming format YYYY.MM.DD)
+        filteredRows.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Limit the number of items for 'news-latest' if LATEST_NEWS_COUNT is set
+        if (pageType === 'news-latest' && typeof LATEST_NEWS_COUNT !== 'undefined' && LATEST_NEWS_COUNT > 0) {
+            filteredRows = filteredRows.slice(0, LATEST_NEWS_COUNT);
+        }
+
+        if (pageType === 'home') {
+            filteredRows = filteredRows.slice(0, 3);
+            renderNewsPage(filteredRows, targetContainer, isKr, false); // No wrapper for home (Grid)
+        } else {
+            renderNewsPage(filteredRows, targetContainer, isKr, true); // Use wrapper for others (Flex Column)
+        }
+
+    } catch (error) {
+        console.error('Error loading news:', error);
+        const container = document.getElementById('news-list');
+        if (container) {
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">Error loading news.</p>`;
+        }
+    }
+}
+
+function renderNewsPage(rows, container, isKr, useWrapper = true) {
+    let html = '';
+    if (useWrapper) {
+        html += '<div style="display: flex; flex-direction: column; gap: 1rem;">';
+    }
+
+    rows.forEach(item => {
+        const title = isKr && item.title_kr ? item.title_kr : item.title_en;
+        const summary = isKr && item.sum_kr ? item.sum_kr : item.sum_en;
+
+        let clickAction = '';
+        let cursorStyle = '';
+        // If link exists and is likely a markdown file (local path), open in modal
+        if (item.link && item.link !== '#' && item.link.trim() !== '') {
+            clickAction = `onclick="openNewsModal('${item.link}')"`;
+            cursorStyle = 'cursor: pointer;';
+        }
+
+        html += `
+        <div class="publication-card" ${clickAction} style="${cursorStyle}">
+            <div class="pub-content">
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${title}</h3>
+                <p style="color: var(--color-text-muted); margin-bottom: 0.5rem; font-size: 0.95rem;">
+                    ${summary}
+                </p>
+                <p style="color: var(--color-accent); font-weight: 500; font-size: 0.9rem;">
+                    ${item.date}
+                </p>
+            </div>
+        </div>
+        `;
+    });
+
+    if (useWrapper) {
+        html += '</div>';
+    }
+    container.innerHTML = html;
+}
+
+// Modal Functions
+window.openNewsModal = async function (url) {
+    const modal = document.getElementById('news-modal');
+    const modalBody = document.getElementById('news-modal-body');
+    if (!modal || !modalBody) return;
+
+    // Show loading state
+    modalBody.innerHTML = '<p>Loading...</p>';
+    modal.style.display = 'flex';
+    // Small delay to allow display:flex to apply before adding class for transition
+    setTimeout(() => modal.classList.add('active'), 10);
+
+    // Disable body scroll
+    document.body.style.overflow = 'hidden';
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to load content');
+        const text = await response.text();
+
+        // Language parsing
+        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+        let contentToRender = '';
+
+        // Split by markers <!-- KR --> and <!-- EN -->
+        const krMarker = '<!-- KR -->';
+        const enMarker = '<!-- EN -->';
+
+        const krStart = text.indexOf(krMarker);
+        const enStart = text.indexOf(enMarker);
+
+        if (krStart !== -1 && enStart !== -1) {
+            if (currentLang === 'kr') {
+                // Get content between KR and EN (or end)
+                let end = enStart > krStart ? enStart : text.length;
+                // Careful if EN comes before KR, but usually KR first. 
+                // Let's handle generic case:
+
+                // Simple parsing: split by markers
+                // Assuming standard format: <!-- KR --> content <!-- EN --> content
+                const parts = text.split(enMarker);
+                const krPart = parts[0].replace(krMarker, '');
+                const enPart = parts[1] || '';
+
+                contentToRender = currentLang === 'kr' ? krPart : enPart;
+
+            } else {
+                const parts = text.split(enMarker);
+                contentToRender = parts[1] || parts[0]; // Fallback if no EN?
+            }
+        } else {
+            // No markers found, just render whole text
+            contentToRender = text;
+        }
+
+        // Render Markdown
+        modalBody.innerHTML = marked.parse(contentToRender);
+
+    } catch (error) {
+        console.error('Error fetching markdown:', error);
+        modalBody.innerHTML = '<p>Error loading content.</p>';
+    }
+};
+
+// Modal Functions
+window.openNewsModal = async function (url) {
+    const modal = document.getElementById('news-modal');
+    const modalBody = document.getElementById('news-modal-body');
+    if (!modal || !modalBody) return;
+
+    // Show loading state
+    modalBody.innerHTML = '<p>Loading...</p>';
+
+    // Correct order for opening: display flex -> reflow -> active class
+    modal.style.display = 'flex';
+    // Force reflow
+    void modal.offsetWidth;
+    modal.classList.add('active');
+
+    // Disable body scroll
+    document.body.style.overflow = 'hidden';
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to load content');
+        const text = await response.text();
+
+        // Language parsing and rendering (same as before)
+        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+        let contentToRender = text;
+
+        const krMarker = '<!-- KR -->';
+        const enMarker = '<!-- EN -->';
+
+        const krStart = text.indexOf(krMarker);
+        const enStart = text.indexOf(enMarker);
+
+        if (krStart !== -1 && enStart !== -1) {
+            const parts = text.split(enMarker);
+            const krPart = parts[0].replace(krMarker, '');
+            const enPart = parts[1] || '';
+            contentToRender = currentLang === 'kr' ? krPart : enPart;
+        }
+
+        modalBody.innerHTML = marked.parse(contentToRender);
+
+    } catch (error) {
+        console.error('Error fetching markdown:', error);
+        modalBody.innerHTML = '<p>Error loading content.</p>';
+        console.log("Failed to load news content. Please check if the markdown file exists.");
+    }
+};
+
+window.closeNewsModal = function () {
+    const modal = document.getElementById('news-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        // Wait for transition to finish before hiding
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = ''; // Restore scroll
+        }, 300);
+    }
+};
+
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('news-modal');
+    if (e.target === modal) {
+        closeNewsModal();
     }
 });
 
