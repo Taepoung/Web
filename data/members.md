@@ -54,5 +54,5 @@ The `members.csv` file uses the following columns. Please ensure you maintain th
     -   사용자 경험을 위해 `_kr`과 `_en` 열을 모두 채워주는 것이 좋습니다.
 
 4.  **Alumni Layout (졸업생 레이아웃)**:
-    -   Alumni members use a simpler horizontal card layout (Grid-4) compared to current members (Grid-3).
-    -   졸업생은 재학생(Grid-3)보다 간단한 가로형 카드 레이아웃(Grid-4)을 사용합니다.
+    -   Alumni members use a simpler horizontal card layout (Grid Columns 4) compared to current members (Grid Columns 3).
+    -   졸업생은 재학생(Grid Columns 3)보다 간단한 가로형 카드 레이아웃(Grid Columns 4)을 사용합니다.

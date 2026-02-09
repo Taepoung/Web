@@ -413,83 +413,104 @@ ul {
     }
 }
 
-.grid-3 {
-    gap: 2rem;
-}
-
-.grid-4 {
-    gap: 1.5rem;
-}
-
-/* grid-4는 더 많은 열을 위해 간격을 약간 줄임 */
-
-.grid-3,
-.grid-4 {
+/* 공통 그리드 시스템 (Unified Grid System) */
+.grid {
     display: grid;
+    /* 기본값: 3열 (Default 3 Columns) */
+    --grid-cols: 3;
+    --card-width: 340px;
+    --grid-gap: 2rem;
+
+    gap: var(--grid-gap);
     justify-content: center;
-    /* 전체 칸을 중앙으로 (1~2명일 때 자동 중앙) */
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* 전체 그리드(컬럼 덩어리)를 화면 중앙에 정렬 */
+    justify-items: center;
+    /* 각 컬럼(트랙) 내부에서 아이템을 중앙 정렬 (1열일 때 필수) */
+
+    /* 레이아웃 변경(너비 등)은 즉시 반응하도록 transition에서 제외하고, 장식 요소만 애니메이션 적용 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     margin: 0 auto;
     width: 100%;
-    /* 부모 안에서 중앙 정렬을 위해 100% 확보 */
+
+    /* 변수 기반 컬럼 생성 (유동적 너비) */
+    grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+
+    /* 최대 너비 자동 계산 (컨테이너 제한) */
+    max-width: calc((var(--grid-cols) * var(--card-width)) + ((var(--grid-cols) - 1) * var(--grid-gap)));
 }
 
-/* 데스크탑: 3열(340px) / 4열(260px) 가상 박스 고정 */
-@media (min-width: 1201px) {
-    .grid-3 {
-        grid-template-columns: repeat(3, 340px);
-        /* 3열 고정 */
-        max-width: 1084px;
+/* 그리드 아이템 사이즈 제어 */
+.grid>* {
+    width: 100%;
+    max-width: var(--card-width);
+    /* 최대 너비 제한으로 중앙 정렬 시 카드 크기 유지 */
+    /* flex-shrink 등 삭제 */
+}
+
+/* 4열 옵션 (4 Columns Modifier) */
+.cols-4 {
+    --grid-cols: 4;
+    --card-width: 260px;
+    --grid-gap: 1.5rem;
+}
+
+/* --- [Future Use: 5 ~ 6 Columns Placeholder] --- */
+/* 필요 시 주석을 해제하여 사용하세요. (Uncomment to use) */
+/*
+.cols-5 {
+    --grid-cols: 5;
+    --card-width: 200px;
+    --grid-gap: 1rem;
+}
+
+.cols-6 {
+    --grid-cols: 6;
+    --card-width: 160px;
+    --grid-gap: 1rem;
+}
+*/
+
+/* 반응형: 작은 데스크탑 (900px ~ 1200px) - 3열 유지하며 카드만 축소 (Squeeze) */
+@media (max-width: 1200px) and (min-width: 901px) {
+    .grid {
+        --card-width: 280px;
+        /* 카드가 좁아지며 3열 유지 */
+        --grid-gap: 1.5rem;
+        /* 간격도 살짝 줄여서 공간 확보 */
     }
 
-    .grid-4 {
-        grid-template-columns: repeat(4, 260px);
-        /* 4열 고정 */
-        max-width: 1112px;
-        /* 4 * 260 + 3 * 24 (1.5rem gap) */
+    .grid.cols-4 {
+        --card-width: 200px;
+        /* 4열일 때 축소 */
+        --grid-gap: 1rem;
+    }
+
+    /* [Future Use 5~6 cols] */
+    /*
+    .grid.cols-5 { --card-width: 160px; }
+    .grid.cols-6 { --card-width: 140px; }
+    */
+}
+
+/* 태블릿 (900px 이하): 2열로 변경 */
+@media (max-width: 900px) {
+    .grid {
+        --grid-cols: 2;
+        /* 2열로 강제 변경 */
+        --card-width: 340px;
+        /* 다시 넉넉하게 */
     }
 }
 
-/* 작은 데스크탑: 박스 크기 조절하여 4열/3열 유지 시도 */
-@media (max-width: 1200px) and (min-width: 1025px) {
-    .grid-3 {
-        grid-template-columns: repeat(3, 320px);
-        max-width: 1024px;
-    }
-
-    .grid-4 {
-        grid-template-columns: repeat(4, 240px);
-        max-width: 1056px;
-        /* 4 * 240 + 3 * 32 */
-    }
-}
-
-/* 태블릿: 2열 정렬 */
-@media (max-width: 1024px) and (min-width: 601px) {
-
-    .grid-3,
-    .grid-4 {
-        grid-template-columns: repeat(2, minmax(280px, 340px));
-        max-width: 712px;
-        /* 2 * 340 + 32 */
-    }
-}
-
-/* 모바일/작은 태블릿: 1열 */
+/* 모바일 (600px 이하): 1열로 변경 */
 @media (max-width: 600px) {
-
-    .grid-3,
-    .grid-4 {
-        grid-template-columns: minmax(280px, 340px);
-        width: 100%;
-        max-width: 340px;
+    .grid {
+        --grid-cols: 1;
+        /* 1열로 강제 변경 */
+        --card-width: 100%;
+        max-width: 400px;
+        grid-template-columns: 1fr;
     }
-}
-
-.grid-3,
-.grid-4 {
-    max-width: 100%;
-    /* 부모 컨테이너(divider 등)를 절대 넘지 않음 */
 }
 
 .lang-btn {
