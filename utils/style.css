@@ -847,7 +847,8 @@ a.icon-link[href="#"] {
 @media (max-width: 768px) {
     .header-nav {
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
+        /* Changed from center to prevent clipping */
         /* 기본은 중앙 정렬 */
         padding: 0.5rem 0;
         overflow-x: auto;
@@ -870,6 +871,8 @@ a.icon-link[href="#"] {
         /* 양끝 잘림 방지용 여백 */
         flex-wrap: nowrap;
         min-width: max-content;
+        margin: 0 auto;
+        /* Center if it fits within the viewport */
     }
 
     .nav-link {
