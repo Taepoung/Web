@@ -334,9 +334,11 @@ function renderNewsPage(rows, container, isKr, useWrapper = true) {
 
         let clickAction = '';
         let cursorStyle = '';
-        // Always enable pointer and click, passing empty string if no link
-        clickAction = `onclick="openNewsModal('${item.link && item.link !== '#' ? item.link : ''}')"`;
-        cursorStyle = 'cursor: pointer;';
+        // If link exists and is likely a markdown file (local path), open in modal
+        if (item.link && item.link !== '#' && item.link.trim() !== '') {
+            clickAction = `onclick="openNewsModal('${item.link}')"`;
+            cursorStyle = 'cursor: pointer;';
+        }
 
         html += `
         <div class="publication-card" ${clickAction} style="${cursorStyle}">
@@ -365,27 +367,14 @@ window.openNewsModal = async function (url) {
     const modalBody = document.getElementById('news-modal-body');
     if (!modal || !modalBody) return;
 
-    // Correct order for opening: display flex -> reflow -> active class
+    // Show loading state
+    modalBody.innerHTML = '<p>Loading...</p>';
     modal.style.display = 'flex';
-    // Force reflow
-    void modal.offsetWidth;
-    modal.classList.add('active');
+    // Small delay to allow display:flex to apply before adding class for transition
+    setTimeout(() => modal.classList.add('active'), 10);
 
     // Disable body scroll
     document.body.style.overflow = 'hidden';
-
-    // Handle empty URL (No attached content)
-    if (!url || url.trim() === '') {
-        modalBody.innerHTML = `
-            <div style="text-align: center; padding: 2rem 0; color: var(--color-text-muted);">
-                <p style="margin-bottom: 0.5rem; font-weight: 500; font-size: 1.1rem;">No detailed content.</p>
-                <p>상세 내용이 없습니다.</p>
-            </div>
-        `;
-        return;
-    }
-
-    // Show loading state for actual fetches
 
     try {
         const response = await fetch(url);
@@ -432,12 +421,55 @@ window.openNewsModal = async function (url) {
 
     } catch (error) {
         console.error('Error fetching markdown:', error);
-        modalBody.innerHTML = `
-            <div style="text-align: center; padding: 2rem 0; color: var(--color-text-muted);">
-                <p style="margin-bottom: 0.5rem;">Content not found.</p>
-                <p>내용을 찾을 수 없습니다.</p>
-            </div>
-        `;
+        modalBody.innerHTML = '<p>Error loading content.</p>';
+    }
+};
+
+// Modal Functions
+window.openNewsModal = async function (url) {
+    const modal = document.getElementById('news-modal');
+    const modalBody = document.getElementById('news-modal-body');
+    if (!modal || !modalBody) return;
+
+    // Show loading state
+    modalBody.innerHTML = '<p>Loading...</p>';
+
+    // Correct order for opening: display flex -> reflow -> active class
+    modal.style.display = 'flex';
+    // Force reflow
+    void modal.offsetWidth;
+    modal.classList.add('active');
+
+    // Disable body scroll
+    document.body.style.overflow = 'hidden';
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to load content');
+        const text = await response.text();
+
+        // Language parsing and rendering (same as before)
+        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+        let contentToRender = text;
+
+        const krMarker = '<!-- KR -->';
+        const enMarker = '<!-- EN -->';
+
+        const krStart = text.indexOf(krMarker);
+        const enStart = text.indexOf(enMarker);
+
+        if (krStart !== -1 && enStart !== -1) {
+            const parts = text.split(enMarker);
+            const krPart = parts[0].replace(krMarker, '');
+            const enPart = parts[1] || '';
+            contentToRender = currentLang === 'kr' ? krPart : enPart;
+        }
+
+        modalBody.innerHTML = marked.parse(contentToRender);
+
+    } catch (error) {
+        console.error('Error fetching markdown:', error);
+        modalBody.innerHTML = '<p>Error loading content.</p>';
         console.log("Failed to load news content. Please check if the markdown file exists.");
     }
 };
@@ -465,153 +497,7 @@ window.addEventListener('click', (e) => {
 // ===========================================
 // 4. CSV 기반 출판물 동적 로딩 (CSV Loading)
 // ===========================================
-// CSV 파싱 함수 (공통 사용)
-function parseCSV(text) {
-    const lines = text.trim().split('\n');
-    const headers = lines[0].split(',').map(h => h.trim());
-    const result = [];
-
-    // 정규식을 사용하여 CSV 파싱 (따옴표 안에 있는 쉼표 처리)
-    // 예: "Kim, Kisub", "Title" -> 쉼표로 분리되지 않도록
-    const regex = /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g;
-    // 간단한 구현: 쉼표로 나누되, 따옴표 안의 쉼표는 무시
-    // 하지만 복잡한 CSV는 라이브러리 사용하는 게 좋음. 
-    // 여기서는 간단히 커스텀 파서 구현
-
-    for (let i = 1; i < lines.length; i++) {
-        // 빈 줄 무시
-        if (lines[i].trim() === '') continue;
-
-        const row = {};
-        let currentLine = lines[i];
-        let values = [];
-        let inQuote = false;
-        let currentValue = '';
-
-        for (let j = 0; j < currentLine.length; j++) {
-            const char = currentLine[j];
-            if (char === '"') {
-                inQuote = !inQuote;
-            } else if (char === ',' && !inQuote) {
-                values.push(currentValue.trim());
-                currentValue = '';
-            } else {
-                currentValue += char;
-            }
-        }
-        values.push(currentValue.trim()); // 마지막 값
-
-        // 따옴표 제거 및 데이터 매핑
-        values = values.map(v => v.replace(/^"|"$/g, '').replace(/""/g, '"'));
-
-        headers.forEach((header, index) => {
-            row[header] = values[index] || '';
-        });
-        result.push(row);
-    }
-    return result;
-}
-
-async function loadPublications(pageType) {
-    try {
-        const response = await fetch('data/publications.csv');
-        const text = await response.text();
-        const rows = parseCSV(text);
-
-        const container = document.getElementById('publication-list');
-        if (!container) return; // Should not happen
-
-        // 현재 언어 확인 (제목/내용에 언어별 분기가 필요하다면 사용)
-        // 출판물은 보통 영어 원문 위주이므로 그대로 출력하지만, 
-        // 필요 시 rows를 가공하거나 UI 텍스트(년도 등)를 한글로 바꿀 수 있음.
-        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
-        const isKr = currentLang === 'kr';
-
-        // 1. Filter by Type
-        let filteredRows = [];
-        if (pageType === 'conference') {
-            filteredRows = rows.filter(r => r.type === 'Conference' && r.year >= RECENT_THRESHOLD_YEAR);
-        } else if (pageType === 'journal') {
-            filteredRows = rows.filter(r => r.type === 'Journal' && r.year >= RECENT_THRESHOLD_YEAR);
-        } else if (pageType === 'former') {
-            // Former는 Conference/Journal 구분 없이 예전 것 모두? 
-            // 아니면 탭이 따로? 보통 Former Publications는 모든 타입의 예전 논문.
-            filteredRows = rows.filter(r => r.year < RECENT_THRESHOLD_YEAR);
-        }
-
-        if (filteredRows.length === 0) {
-            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
-                ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
-            </p>`;
-            return;
-        }
-
-        // 2. Sort by Year (Descending)
-        // filteredRows.sort((a, b) => b.year - a.year); // 단순 연도 비교
-        // 같은 연도 내에서도 최신순 정렬이 필요하다면 추가 로직 필요 (현재 데이터는 연도만 있음)
-        // CSV 순서를 믿거나, 연도 역순 정렬.
-        filteredRows.sort((a, b) => {
-            // 연도가 [Just Accepted] 같은 텍스트를 포함할 수 있으므로 숫자만 추출해서 비교
-            const yearA = parseInt(a.year.toString().match(/\d+/)[0]);
-            const yearB = parseInt(b.year.toString().match(/\d+/)[0]);
-            return yearB - yearA;
-        });
-
-
-        // 3. Render
-        let html = '';
-        filteredRows.forEach(item => {
-            // 강조 처리 (저자명에서 K. Kim, Kisub Kim 등 볼드 처리) - HTML 태그가 CSV에 포함되어 있다고 가정, 아니면 여기서 처리
-            // 예: "K. Kim**" -> "<b>K. Kim</b>" (이미 CSV에 별표 등으로 표시되어 있다면 변환)
-            // 여기서는 CSV 데이터가 clean하다고 가정하고, ** 표시를 <b>로 변환하는 간단한 포매터 적용
-            const authors = item.authors.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-                .replace(/K\. Kim/g, '<b>K. Kim</b>')
-                .replace(/Kisub Kim/g, '<b>Kisub Kim</b>');
-
-            // 링크들 처리
-            let linksHtml = '';
-            if (item.link && item.link.trim() !== '' && item.link !== '#') {
-                linksHtml += `<a href="${item.link}" target="_blank" class="text-link">[Paper]</a>`;
-            }
-            if (item.code && item.code.trim() !== '') {
-                linksHtml += ` <a href="${item.code}" target="_blank" class="text-link">[Code]</a>`;
-            }
-            if (item.bibtex && item.bibtex.trim() !== '') {
-                // BibTeX 모달이나 토글 기능이 필요할 수 있음. 지금은 간단히 표시 안 하거나, 별도 구현.
-                // 일단은 생략하거나, 필요한 경우 추가.
-            }
-
-            // Status Badge (Just Accepted, Under Review etc.)
-            let statusBadge = '';
-            if (item.status && item.status.trim() !== '') {
-                // 스타일링을 위해 클래스 추가 가능
-                statusBadge = `<span class="status-badge">${item.status}</span>`;
-            }
-
-            // Venue formatting
-            // const venue = `<i>${item.venue}</i>`;
-
-            html += `
-            <div class="publication-card">
-                <div class="pub-year">${item.year}</div>
-                <div class="pub-content">
-                    <h3>${item.title} ${statusBadge}</h3>
-                    <p class="authors">${authors}</p>
-                    <p class="venue"><i>${item.venue}</i></p>
-                    <div class="links">
-                        ${linksHtml}
-                    </div>
-                </div>
-            </div>
-            `;
-        });
-
-        container.innerHTML = html;
-
-    } catch (error) {
-        console.error('Error loading publications:', error);
-    }
-}
+// ... (loadPublications and helpers remain unchanged) ...
 
 // ===========================================
 // 5. CSV 기반 멤버 동적 로딩 (Members Loading)
@@ -621,7 +507,7 @@ let allMemberRows = [];
 
 async function loadMembers(pageType) {
     try {
-        const response = await fetch('data/members.csv');
+        const response = await fetch('./data/members.csv');
         const text = await response.text();
         allMemberRows = parseCSV(text); // 데이터 저장
 
@@ -814,30 +700,307 @@ function createMemberCard(member, isKr, isAlumni) {
         </div>
         `;
     } else {
-        // Students & Supporters
-        linksSection = `
-            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid #f1f5f9; width: 100%;">
-                ${emailHtml}
-                <div style="display: flex; gap: 0.8rem; margin-bottom: 0.8rem;">
-                    ${socialHtml}
-                </div>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                    ${academicHtml}
-                </div>
-            </div>
-        `;
+        // For Students/Supporters: Use Text style for Academic Links
+        // We need inline CSS for the pill style or reuse .academic-links from CSS
+        // style.css already has .academic-links a { ... pill style ... }
+        // We should wrap it in <div class="academic-links">
 
         return `
-        <div class="card">
+        <div class="card" style="text-align: center; padding: 2rem 1.5rem; display: flex; flex-direction: column; align-items: center; height: 100%;">
             ${imageHtml}
-            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
-                <h3 style="font-size: 1.25rem; margin-bottom: 0.2rem;">${name}</h3>
-                <p style="color: var(--color-accent); font-weight: 500; margin-bottom: 0.5rem;">${member.role_en || ''}</p>
-                <p style="font-size: 0.95rem; color: #475569; margin-bottom: 1rem; line-height: 1.5;">${isKr && member.intro_kr ? member.intro_kr : member.intro_en}</p>
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">${name}</h3>
+            
+            <p style="color: var(--color-accent); font-weight: 600; font-size: 0.95rem; margin-bottom: ${member.intro_en ? '0.75rem' : '1.5rem'};">
+                ${isKr && member.interest_kr ? member.interest_kr : member.interest_en || ''}
+            </p>
+            
+            <p style="color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">
+                ${isKr && member.intro_kr ? member.intro_kr : member.intro_en || ''}
+            </p>
+
+            <div style="width: 100%; border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                ${emailHtml}
                 
-                ${linksSection}
+                ${socialHtml ? `<div class="social-links justify-center" style="margin-bottom: ${academicHtml ? '0.5rem' : '0'};">${socialHtml}</div>` : ''}
+                
+                ${academicHtml ? `<div class="academic-links justify-center" style="gap: 0.5rem; flex-wrap: wrap;">${academicHtml}</div>` : ''}
             </div>
         </div>
         `;
     }
+}
+
+// ===========================================
+// 4. CSV 기반 출판물 동적 로딩 (CSV Loading)
+// ===========================================
+async function loadPublications(pageType) {
+    try {
+        const response = await fetch('data/publications.csv');
+        const text = await response.text();
+        const rows = parseCSV(text);
+
+        const container = document.getElementById('publication-list');
+        if (!container) return;
+
+        // 현재 언어 확인
+        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+        const isKr = currentLang === 'kr';
+
+        // 데이터 필터링
+        let filteredData = [];
+
+        if (pageType === 'conference') {
+            filteredData = rows.filter(row => row.type === 'Conference' && parseInt(row.year) >= RECENT_THRESHOLD_YEAR);
+        } else if (pageType === 'journal') {
+            filteredData = rows.filter(row => row.type === 'Journal' && parseInt(row.year) >= RECENT_THRESHOLD_YEAR);
+        } else if (pageType === 'former') {
+            filteredData = rows.filter(row => parseInt(row.year) < RECENT_THRESHOLD_YEAR);
+        }
+
+        if (filteredData.length === 0) {
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+                ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
+            </p>`;
+            return;
+        }
+
+        // 연도별 그룹화
+        const groupedByYear = {};
+        filteredData.forEach(item => {
+            if (!groupedByYear[item.year]) groupedByYear[item.year] = [];
+            groupedByYear[item.year].push(item);
+        });
+
+        // 연도 내림차순 정렬
+        const years = Object.keys(groupedByYear).sort((a, b) => b - a);
+
+        // Former 페이지의 경우 Conference/Journal 섹션 분리가 필요합니다.
+        if (pageType === 'former') {
+            renderFormerPage(filteredData, container, isKr);
+        } else {
+            // 헤더 연도 동적 업데이트 (Conference/Journal)
+            if (pageType === 'conference') {
+                const header = document.getElementById('conference-header');
+                if (header) {
+                    header.setAttribute('data-lang-kr', `컨퍼런스 (${RECENT_THRESHOLD_YEAR}~)`);
+                    header.setAttribute('data-lang-en', `Conference (${RECENT_THRESHOLD_YEAR}~)`);
+                    updateElementText(header);
+                }
+            } else if (pageType === 'journal') {
+                const header = document.getElementById('journal-header');
+                if (header) {
+                    header.setAttribute('data-lang-kr', `저널 (${RECENT_THRESHOLD_YEAR}~)`);
+                    header.setAttribute('data-lang-en', `Journal (${RECENT_THRESHOLD_YEAR}~)`);
+                    updateElementText(header);
+                }
+            }
+
+            renderNormalPage(years, groupedByYear, container, isKr);
+        }
+
+    } catch (error) {
+        console.error('Error loading publications:', error);
+        const container = document.getElementById('publication-list');
+        if (container) {
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">Error loading data.</p>`;
+        }
+    }
+}
+
+function renderNormalPage(years, groupedByYear, container, isKr) {
+    let html = '';
+    years.forEach(year => {
+        groupedByYear[year].forEach(item => {
+            html += createPublicationCard(item);
+        });
+    });
+
+    if (html === '') {
+        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+            ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
+        </p>`;
+    } else {
+        container.innerHTML = `<div style="display: flex; flex-direction: column; gap: 1rem;">${html}</div>`;
+    }
+}
+
+function renderFormerPage(data, container, isKr) {
+    const confData = data.filter(row => row.type === 'Conference').sort((a, b) => b.year - a.year);
+    const jourData = data.filter(row => row.type === 'Journal').sort((a, b) => b.year - a.year);
+
+    const formerYear = RECENT_THRESHOLD_YEAR - 1;
+
+    // Update Intro Text
+    const formerIntro = document.getElementById('former-intro-text');
+    if (formerIntro) {
+        formerIntro.setAttribute('data-lang-kr', `${formerYear}년 이하의 출판물 목록입니다.`);
+        formerIntro.setAttribute('data-lang-en', `List of publications up to ${formerYear}.`);
+        updateElementText(formerIntro);
+    }
+
+    if (confData.length === 0 && jourData.length === 0) {
+        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+            ${isKr ? '보관된 논문이 없습니다.' : 'No archived publications found.'}
+        </p>`;
+        return;
+    }
+
+    let html = '';
+
+    // Conference Section
+    if (confData.length > 0) {
+        html += `
+            <div style="margin-bottom: 4rem;">
+                <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+                    Conference (~${formerYear})
+                </h2>
+                <ul class="simple-list" style="list-style: none; padding: 0;">
+                    ${confData.map(item => createSimpleListItem(item)).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    // Journal Section
+    if (jourData.length > 0) {
+        html += `
+            <div style="margin-bottom: 3rem;">
+                <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+                    Journal (~${formerYear})
+                </h2>
+                <ul class="simple-list" style="list-style: none; padding: 0;">
+                    ${jourData.map(item => createSimpleListItem(item)).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+}
+
+function createPublicationCard(item) {
+    // 강조 저자 처리 (**K. Kim**)
+    let authors = item.authors.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+    // 링크 버튼 처리
+    let linksHtml = '';
+    if (item.link && item.link !== '#' && item.link.trim() !== '') {
+        linksHtml += `<a href="${item.link}" class="icon-link" aria-label="PDF" target="_blank"><i class="ri-links-line"></i></a>`;
+    }
+    if (item.bibtex && item.bibtex.trim() !== '') {
+        // BibTeX는 data 속성에 저장하고 클릭 시 읽어옴 (따옴표/줄바꿈 방지)
+        const safeBibtex = item.bibtex.replace(/"/g, '&quot;');
+        linksHtml += `<button class="icon-btn bibtex-copy-btn" data-bibtex="${safeBibtex}" onclick="copyBibtex(this)" aria-label="Copy BibTeX"><i class="ri-double-quotes-l"></i></button>`;
+    }
+
+    return `
+    <div class="publication-card">
+        <div class="pub-content">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${item.title}</h3>
+            <p style="color: var(--color-text-muted); margin-bottom: 0.5rem; font-size: 0.95rem;">
+                ${authors}
+            </p>
+            <p style="color: var(--color-accent); font-weight: 500; font-size: 0.9rem;">
+                ${item.venue}, ${item.year} ${item.status ? `[${item.status}]` : ''}
+            </p>
+        </div>
+        <div class="pub-links">
+            ${linksHtml}
+        </div>
+    </div>
+    `;
+}
+
+function createSimpleListItem(item) {
+    let authors = item.authors.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    let linksHtml = '';
+
+    // Link icon
+    if (item.link && item.link !== '#' && item.link.trim() !== '') {
+        linksHtml += `<a href="${item.link}" class="icon-link" aria-label="Link" style="color: var(--color-text-muted); margin-left: 0.5rem; text-decoration: none;"><i class="ri-links-line"></i></a>`;
+    }
+
+    // BibTeX copy button
+    if (item.bibtex && item.bibtex.trim() !== '') {
+        const safeBibtex = item.bibtex.replace(/"/g, '&quot;');
+        linksHtml += `<button class="icon-btn bibtex-copy-btn" data-bibtex="${safeBibtex}" onclick="copyBibtex(this)" aria-label="Copy BibTeX" style="margin-left: 0.5rem; font-size: 1rem;"><i class="ri-double-quotes-l"></i></button>`;
+    }
+
+    return `
+    <li style="margin-bottom: 1.5rem;">
+        ${authors}.
+        <strong>${item.title}</strong>
+        <em>${item.venue}</em>, ${item.year}.
+        ${linksHtml}
+    </li>
+    `;
+}
+
+// 간단한 CSV 파서 (따옴표 처리 포함)
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim());
+    const result = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+
+        const row = {};
+        const values = [];
+        let currentVal = '';
+        let inQuotes = false;
+
+        const line = lines[i];
+        for (let j = 0; j < line.length; j++) {
+            const char = line[j];
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                values.push(currentVal.trim());
+                currentVal = '';
+            } else {
+                currentVal += char;
+            }
+        }
+        values.push(currentVal.trim());
+
+        headers.forEach((header, index) => {
+            // 따옴표 제거
+            let val = values[index] || '';
+            if (val.startsWith('"') && val.endsWith('"')) {
+                val = val.substring(1, val.length - 1);
+            }
+            row[header] = val;
+        });
+        result.push(row);
+    }
+    return result;
+}
+
+// BibTeX 복사 기능
+window.copyBibtex = function (btn) {
+    const bibtex = btn.getAttribute('data-bibtex');
+    if (!bibtex) return;
+
+    navigator.clipboard.writeText(bibtex).then(() => {
+        showToast("BibTeX Copied!");
+    }).catch(err => {
+        console.error('Copy failed:', err);
+        // Fallback or Alert
+        alert("Copy failed. Please copy manually.");
+    });
+};
+
+function showToast(message) {
+    // Toast 요소가 없으면 생성
+    let toast = document.getElementById("toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "toast";
+        toast.className = "toast";
+        document.body.appendChild(toast);
+    }
+    toast.innerText = message;
+    toast.className = "toast show";
+    setTimeout(function () { toast.className = toast.className.replace("show", ""); }, 3000);
 }
