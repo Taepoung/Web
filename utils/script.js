@@ -334,11 +334,9 @@ function renderNewsPage(rows, container, isKr, useWrapper = true) {
 
         let clickAction = '';
         let cursorStyle = '';
-        // If link exists and is likely a markdown file (local path), open in modal
-        if (item.link && item.link !== '#' && item.link.trim() !== '') {
-            clickAction = `onclick="openNewsModal('${item.link}')"`;
-            cursorStyle = 'cursor: pointer;';
-        }
+        // Always enable pointer and click, passing empty string if no link
+        clickAction = `onclick="openNewsModal('${item.link && item.link !== '#' ? item.link : ''}')"`;
+        cursorStyle = 'cursor: pointer;';
 
         html += `
         <div class="publication-card" ${clickAction} style="${cursorStyle}">
@@ -367,73 +365,6 @@ window.openNewsModal = async function (url) {
     const modalBody = document.getElementById('news-modal-body');
     if (!modal || !modalBody) return;
 
-    // Show loading state
-    modalBody.innerHTML = '<p>Loading...</p>';
-    modal.style.display = 'flex';
-    // Small delay to allow display:flex to apply before adding class for transition
-    setTimeout(() => modal.classList.add('active'), 10);
-
-    // Disable body scroll
-    document.body.style.overflow = 'hidden';
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to load content');
-        const text = await response.text();
-
-        // Language parsing
-        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
-        let contentToRender = '';
-
-        // Split by markers <!-- KR --> and <!-- EN -->
-        const krMarker = '<!-- KR -->';
-        const enMarker = '<!-- EN -->';
-
-        const krStart = text.indexOf(krMarker);
-        const enStart = text.indexOf(enMarker);
-
-        if (krStart !== -1 && enStart !== -1) {
-            if (currentLang === 'kr') {
-                // Get content between KR and EN (or end)
-                let end = enStart > krStart ? enStart : text.length;
-                // Careful if EN comes before KR, but usually KR first. 
-                // Let's handle generic case:
-
-                // Simple parsing: split by markers
-                // Assuming standard format: <!-- KR --> content <!-- EN --> content
-                const parts = text.split(enMarker);
-                const krPart = parts[0].replace(krMarker, '');
-                const enPart = parts[1] || '';
-
-                contentToRender = currentLang === 'kr' ? krPart : enPart;
-
-            } else {
-                const parts = text.split(enMarker);
-                contentToRender = parts[1] || parts[0]; // Fallback if no EN?
-            }
-        } else {
-            // No markers found, just render whole text
-            contentToRender = text;
-        }
-
-        // Render Markdown
-        modalBody.innerHTML = marked.parse(contentToRender);
-
-    } catch (error) {
-        console.error('Error fetching markdown:', error);
-        modalBody.innerHTML = '<p>Error loading content.</p>';
-    }
-};
-
-// Modal Functions
-window.openNewsModal = async function (url) {
-    const modal = document.getElementById('news-modal');
-    const modalBody = document.getElementById('news-modal-body');
-    if (!modal || !modalBody) return;
-
-    // Show loading state
-    modalBody.innerHTML = '<p>Loading...</p>';
-
     // Correct order for opening: display flex -> reflow -> active class
     modal.style.display = 'flex';
     // Force reflow
@@ -442,6 +373,22 @@ window.openNewsModal = async function (url) {
 
     // Disable body scroll
     document.body.style.overflow = 'hidden';
+
+    // Handle empty URL (No attached content)
+    if (!url || url.trim() === '') {
+        modalBody.innerHTML = `
+            <div style="text-align: center; padding: 2rem 0; color: var(--color-text-muted);">
+                <p style="margin-bottom: 0.5rem; font-weight: 500; font-size: 1.1rem;">No detailed content.</p>
+                <p>상세 내용이 없습니다.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Show loading state
+    modalBody.innerHTML = '<p>Loading...</p>';
+
+    // Show loading state
 
     try {
         const response = await fetch(url);
@@ -469,7 +416,12 @@ window.openNewsModal = async function (url) {
 
     } catch (error) {
         console.error('Error fetching markdown:', error);
-        modalBody.innerHTML = '<p>Error loading content.</p>';
+        modalBody.innerHTML = `
+            <div style="text-align: center; padding: 2rem 0; color: var(--color-text-muted);">
+                <p style="margin-bottom: 0.5rem;">Content not found.</p>
+                <p>내용을 찾을 수 없습니다.</p>
+            </div>
+        `;
         console.log("Failed to load news content. Please check if the markdown file exists.");
     }
 };
