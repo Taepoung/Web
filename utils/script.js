@@ -13,6 +13,11 @@ const RECENT_THRESHOLD_YEAR = 2020;
 // [News] 최신 소식 페이지에 표시할 뉴스 개수 (0 = 제한 없음)
 const LATEST_NEWS_COUNT = 20;
 
+// Pagination Configuration
+const ITEMS_PER_PAGE = 20;
+let currentNewsRows = []; // Store news items for pagination
+let currentResearchRows = []; // Store research items for pagination
+
 
 // ===========================================
 // 0. 헤더/푸터 동적 로딩 (Dynamic Loading)
@@ -287,19 +292,21 @@ window.scrollToTop = function () {
 // ===========================================
 // Research Loading
 // ===========================================
-async function loadResearch(pageType) {
+async function loadResearch(pageType, pageNum = 1) {
     try {
         const container = document.getElementById('news-list');
         if (!container) return;
 
-        const response = await fetch('data/research.csv');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        if (currentResearchRows.length === 0) {
+            const response = await fetch('data/research.csv');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const text = await response.text();
+            currentResearchRows = parseCSV(text);
         }
 
-        const text = await response.text();
-        const rows = parseCSV(text);
-
+        const rows = currentResearchRows;
         const currentLang = localStorage.getItem('preferred-lang') || 'kr';
         const isKr = currentLang === 'kr';
 
@@ -322,8 +329,32 @@ async function loadResearch(pageType) {
         // Sort by date descending
         filteredRows.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        // Use same renderer as News (reusing card style)
-        renderNewsPage(filteredRows, container, isKr, true);
+        // Pagination logic
+        const totalItems = filteredRows.length;
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+        const startIndex = (pageNum - 1) * ITEMS_PER_PAGE;
+        const pagedRows = filteredRows.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+        container.innerHTML = '';
+
+        // Pagination (Top)
+        const topPag = document.createElement('div');
+        renderPagination(topPag, totalPages, pageNum, (newPage) => loadResearch(pageType, newPage));
+        container.appendChild(topPag);
+
+        // Content
+        const contentArea = document.createElement('div');
+        renderNewsPage(pagedRows, contentArea, isKr, true);
+        container.appendChild(contentArea);
+
+        // Pagination (Bottom)
+        const bottomPag = document.createElement('div');
+        renderPagination(bottomPag, totalPages, pageNum, (newPage) => loadResearch(pageType, newPage));
+        container.appendChild(bottomPag);
+
+        if (startIndex > 0 || pageNum > 1) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
     } catch (error) {
         console.error('Error loading research:', error);
@@ -335,17 +366,86 @@ async function loadResearch(pageType) {
 }
 
 // ===========================================
+// Pagination UI Renderer
+// ===========================================
+function renderPagination(target, totalPages, currentPage, onPageChange) {
+    if (!target) return;
+    if (totalPages < 1) {
+        target.innerHTML = '';
+        return;
+    }
+
+    let html = `<div class="pagination-container">`;
+
+    // 1. Left Side: Jump to First (<<) and Step Previous (<)
+    html += `<div class="pagination-side">
+        <button class="pagination-btn pagination-arrow" ${currentPage === 1 ? 'disabled' : ''} data-page="1" title="Jump to First">
+            <i class="ri-arrow-left-double-line"></i>
+        </button>
+        <button class="pagination-btn pagination-arrow" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}" title="Previous Page">
+            <i class="ri-arrow-left-s-line"></i>
+        </button>
+    </div>`;
+
+    // 2. Center: Status Indicator (X / Y)
+    html += `<span class="pagination-status">${currentPage} / ${totalPages}</span>`;
+
+    // 3. Right Side: Step Next (>) and Jump to Last (>>)
+    html += `<div class="pagination-side">
+        <button class="pagination-btn pagination-arrow" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}" title="Next Page">
+            <i class="ri-arrow-right-s-line"></i>
+        </button>
+        <button class="pagination-btn pagination-arrow" ${currentPage === totalPages ? 'disabled' : ''} data-page="${totalPages}" title="Jump to Last">
+            <i class="ri-arrow-right-double-line"></i>
+        </button>
+    </div>`;
+
+    html += `</div>`;
+    target.innerHTML = html;
+
+    // Attach Event Listeners
+    target.querySelectorAll('.pagination-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (btn.disabled) return;
+            const page = parseInt(btn.getAttribute('data-page'));
+            if (!isNaN(page) && page >= 1 && page <= totalPages && page !== currentPage) {
+                onPageChange(page);
+            }
+        });
+    });
+
+    // Store current pagination context for keyboard navigation
+    window.currentPagination = { totalPages, currentPage, onPageChange };
+}
+
+// Global Keyboard Navigation
+document.addEventListener('keydown', (e) => {
+    if (!window.currentPagination) return;
+    const { totalPages, currentPage, onPageChange } = window.currentPagination;
+
+    if (e.key === 'ArrowLeft' && currentPage > 1) {
+        onPageChange(currentPage - 1);
+    } else if (e.key === 'ArrowRight' && currentPage < totalPages) {
+        onPageChange(currentPage + 1);
+    }
+});
+
+// ===========================================
 // News Loading
 // ===========================================
 // ===========================================
 // News Loading & Modal
 // ===========================================
-async function loadNews(pageType) {
+async function loadNews(pageType, pageNum = 1) {
     try {
-        const response = await fetch('data/news.csv');
-        const text = await response.text();
-        const rows = parseCSV(text);
+        if (currentNewsRows.length === 0) {
+            const response = await fetch('data/news.csv');
+            const text = await response.text();
+            currentNewsRows = parseCSV(text);
+        }
 
+        const rows = currentNewsRows;
         const container = document.getElementById('news-list');
         // For 'home' page, we use 'recent-news-list', so 'news-list' might be null.
         if (!container && pageType !== 'home') return;
@@ -358,17 +458,14 @@ async function loadNews(pageType) {
         let targetContainer = container;
 
         if (pageType === 'news-latest') {
-            // Latest shows all news items regardless of type
             filteredRows = rows;
         } else if (pageType === 'news-research') {
             filteredRows = rows.filter(r => r.type && r.type.toLowerCase() === 'research');
         } else if (pageType === 'news-other') {
             filteredRows = rows.filter(r => r.type && r.type.toLowerCase() === 'other');
         } else if (pageType === 'home') {
-            // Home page: Show all news, but limited to 4 items
-            // But we need to target a different container
             targetContainer = document.getElementById('recent-news-list');
-            if (!targetContainer) return; // Should not happen if HTML is correct
+            if (!targetContainer) return;
             filteredRows = rows;
         } else {
             filteredRows = rows;
@@ -381,19 +478,42 @@ async function loadNews(pageType) {
             return;
         }
 
-        // Sort by date descending (assuming format YYYY.MM.DD)
+        // Sort by date descending
         filteredRows.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        // Limit the number of items for 'news-latest' if LATEST_NEWS_COUNT is set
-        if (pageType === 'news-latest' && typeof LATEST_NEWS_COUNT !== 'undefined' && LATEST_NEWS_COUNT > 0) {
-            filteredRows = filteredRows.slice(0, LATEST_NEWS_COUNT);
+        // Home page or Latest News logic (not paginated)
+        if (pageType === 'home' || pageType === 'news-latest') {
+            const limit = pageType === 'home' ? 3 : (LATEST_NEWS_COUNT > 0 ? LATEST_NEWS_COUNT : 20);
+            filteredRows = filteredRows.slice(0, limit);
+            renderNewsPage(filteredRows, targetContainer, isKr, pageType !== 'home');
+            return;
         }
 
-        if (pageType === 'home') {
-            filteredRows = filteredRows.slice(0, 3);
-            renderNewsPage(filteredRows, targetContainer, isKr, false); // No wrapper for home (Grid)
-        } else {
-            renderNewsPage(filteredRows, targetContainer, isKr, true); // Use wrapper for others (Flex Column)
+        // Pagination logic for News pages
+        const totalItems = filteredRows.length;
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+        const startIndex = (pageNum - 1) * ITEMS_PER_PAGE;
+        const pagedRows = filteredRows.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+        targetContainer.innerHTML = '';
+
+        // Pagination (Top)
+        const topPag = document.createElement('div');
+        renderPagination(topPag, totalPages, pageNum, (newPage) => loadNews(pageType, newPage));
+        targetContainer.appendChild(topPag);
+
+        // Content
+        const contentArea = document.createElement('div');
+        renderNewsPage(pagedRows, contentArea, isKr, true);
+        targetContainer.appendChild(contentArea);
+
+        // Pagination (Bottom)
+        const bottomPag = document.createElement('div');
+        renderPagination(bottomPag, totalPages, pageNum, (newPage) => loadNews(pageType, newPage));
+        targetContainer.appendChild(bottomPag);
+
+        if (startIndex > 0 || pageNum > 1) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
     } catch (error) {
