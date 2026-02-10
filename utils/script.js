@@ -105,6 +105,10 @@ function initLanguage() {
             else if (['conference', 'journal', 'former'].includes(pageType)) {
                 loadPublications(pageType);
             }
+            // Research pages
+            else if (['research-ongoing', 'research-previous'].includes(pageType)) {
+                loadResearch(pageType);
+            }
         }
     }
 
@@ -244,12 +248,66 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (['news-latest', 'news-research', 'news-other'].includes(pageType)) {
             loadNews(pageType);
         }
+        // [연구 페이지] Ongoing, Previous
+        else if (['research-ongoing', 'research-previous'].includes(pageType)) {
+            loadResearch(pageType);
+        }
         // [메인 페이지] Home (Recent News 4 items)
         else if (pageType === 'home') {
             loadNews('home');
         }
     }
 });
+
+// ===========================================
+// Research Loading
+// ===========================================
+async function loadResearch(pageType) {
+    try {
+        const container = document.getElementById('news-list');
+        if (!container) return;
+
+        const response = await fetch('data/research.csv');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        const rows = parseCSV(text);
+
+        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+        const isKr = currentLang === 'kr';
+
+        // Filter based on pageType and Status column
+        let filteredRows = [];
+
+        if (pageType === 'research-ongoing') {
+            filteredRows = rows.filter(r => r.status && r.status.toLowerCase() === 'ongoing');
+        } else if (pageType === 'research-previous') {
+            filteredRows = rows.filter(r => r.status && r.status.toLowerCase() === 'previous');
+        }
+
+        if (filteredRows.length === 0) {
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+                ${isKr ? '등록된 연구가 없습니다.' : 'No registered research found.'}
+            </p>`;
+            return;
+        }
+
+        // Sort by date descending
+        filteredRows.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Use same renderer as News (reusing card style)
+        renderNewsPage(filteredRows, container, isKr, true);
+
+    } catch (error) {
+        console.error('Error loading research:', error);
+        const container = document.getElementById('news-list');
+        if (container) {
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">Error loading research.</p>`;
+        }
+    }
+}
 
 // ===========================================
 // News Loading
@@ -535,7 +593,270 @@ window.closeCVModal = function () {
 // ===========================================
 // 4. CSV 기반 출판물 동적 로딩 (CSV Loading)
 // ===========================================
-// ... (loadPublications and helpers remain unchanged) ...
+async function loadPublications(pageType) {
+    try {
+        const response = await fetch('data/publications.csv');
+        const text = await response.text();
+        const rows = parseCSV(text);
+
+        const container = document.getElementById('publication-list');
+        if (!container) return; // 현재 페이지에 해당 리스트가 없으면 종료
+
+        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
+        const isKr = currentLang === 'kr';
+
+        // 1. Filter by Page Type (Conference / Journal / Former)
+        // Former: < RECENT_THRESHOLD_YEAR
+        // Current: >= RECENT_THRESHOLD_YEAR
+        let filteredData = [];
+
+        if (pageType === 'former') {
+            filteredData = rows.filter(r => parseInt(r.year) < RECENT_THRESHOLD_YEAR);
+        } else {
+            // Recent (Conference or Journal)
+            const recentData = rows.filter(r => parseInt(r.year) >= RECENT_THRESHOLD_YEAR);
+            if (pageType === 'conference') {
+                filteredData = recentData.filter(r => r.type === 'Conference');
+            } else if (pageType === 'journal') {
+                filteredData = recentData.filter(r => r.type === 'Journal');
+            }
+        }
+
+        // 2. Sort by Year Descending
+        filteredData.sort((a, b) => b.year - a.year);
+
+        // 3. Group by Year (for Conference/Journal pages)
+        // Former page has a different structure (Category based)
+        const years = [...new Set(filteredData.map(item => item.year))];
+        const groupedByYear = {};
+        years.forEach(year => {
+            groupedByYear[year] = filteredData.filter(item => item.year === year);
+        });
+
+        // 4. Render HTML
+        if (filteredData.length === 0) {
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+                ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
+            </p>`;
+            return;
+        }
+
+        // Former 페이지의 경우 Conference/Journal 섹션 분리가 필요합니다.
+        if (pageType === 'former') {
+            renderFormerPage(filteredData, container, isKr);
+        } else {
+            // 헤더 연도 동적 업데이트 (Conference/Journal)
+            if (pageType === 'conference') {
+                const header = document.getElementById('conference-header');
+                if (header) {
+                    header.setAttribute('data-lang-kr', `컨퍼런스 (${RECENT_THRESHOLD_YEAR}~)`);
+                    header.setAttribute('data-lang-en', `Conference (${RECENT_THRESHOLD_YEAR}~)`);
+                    updateElementText(header);
+                }
+            } else if (pageType === 'journal') {
+                const header = document.getElementById('journal-header');
+                if (header) {
+                    header.setAttribute('data-lang-kr', `저널 (${RECENT_THRESHOLD_YEAR}~)`);
+                    header.setAttribute('data-lang-en', `Journal (${RECENT_THRESHOLD_YEAR}~)`);
+                    updateElementText(header);
+                }
+            }
+
+            renderNormalPage(years, groupedByYear, container, isKr);
+        }
+
+    } catch (error) {
+        console.error('Error loading publications:', error);
+        const container = document.getElementById('publication-list');
+        if (container) {
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">Error loading data.</p>`;
+        }
+    }
+}
+
+function renderNormalPage(years, groupedByYear, container, isKr) {
+    let html = '';
+    years.forEach(year => {
+        groupedByYear[year].forEach(item => {
+            html += createPublicationCard(item);
+        });
+    });
+
+    if (html === '') {
+        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+            ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
+        </p>`;
+    } else {
+        container.innerHTML = `<div style="display: flex; flex-direction: column; gap: 1rem;">${html}</div>`;
+    }
+}
+
+function renderFormerPage(data, container, isKr) {
+    const confData = data.filter(row => row.type === 'Conference').sort((a, b) => b.year - a.year);
+    const jourData = data.filter(row => row.type === 'Journal').sort((a, b) => b.year - a.year);
+
+    const formerYear = RECENT_THRESHOLD_YEAR - 1;
+
+    // Update Intro Text
+    const formerIntro = document.getElementById('former-intro-text');
+    if (formerIntro) {
+        formerIntro.setAttribute('data-lang-kr', `${formerYear}년 이하의 출판물 목록입니다.`);
+        formerIntro.setAttribute('data-lang-en', `List of publications up to ${formerYear}.`);
+        updateElementText(formerIntro);
+    }
+
+    if (confData.length === 0 && jourData.length === 0) {
+        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
+            ${isKr ? '보관된 논문이 없습니다.' : 'No archived publications found.'}
+        </p>`;
+        return;
+    }
+
+    let html = '';
+
+    // Conference Section
+    if (confData.length > 0) {
+        html += `
+            <div style="margin-bottom: 4rem;">
+                <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+                    Conference (~${formerYear})
+                </h2>
+                <ul class="simple-list" style="list-style: none; padding: 0;">
+                    ${confData.map(item => createSimpleListItem(item)).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    // Journal Section
+    if (jourData.length > 0) {
+        html += `
+            <div style="margin-bottom: 3rem;">
+                <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+                    Journal (~${formerYear})
+                </h2>
+                <ul class="simple-list" style="list-style: none; padding: 0;">
+                    ${jourData.map(item => createSimpleListItem(item)).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+}
+
+function createPublicationCard(item) {
+    // 강조 저자 처리 (**K. Kim**)
+    let authors = item.authors.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+    // 링크 버튼 처리
+    let linksHtml = '';
+    if (item.link && item.link !== '#' && item.link.trim() !== '') {
+        linksHtml += `<a href="${item.link}" class="icon-link" aria-label="PDF" target="_blank"><i class="ri-links-line"></i></a>`;
+    }
+    if (item.bibtex && item.bibtex.trim() !== '') {
+        // BibTeX는 data 속성에 저장하고 클릭 시 읽어옴 (따옴표/줄바꿈 방지)
+        const safeBibtex = item.bibtex.replace(/"/g, '&quot;');
+        linksHtml += `<button class="icon-btn bibtex-copy-btn" data-bibtex="${safeBibtex}" onclick="copyBibtex(this)" aria-label="Copy BibTeX"><i class="ri-double-quotes-l"></i></button>`;
+    }
+
+    return `
+    <div class="publication-card">
+        <div class="pub-content">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${item.title}</h3>
+            <p style="color: var(--color-text-muted); margin-bottom: 0.5rem; font-size: 0.95rem;">
+                ${authors}
+            </p>
+            <p style="color: var(--color-accent); font-weight: 500; font-size: 0.9rem;">
+                ${item.venue}, ${item.year} ${item.status ? `[${item.status}]` : ''}
+            </p>
+        </div>
+        <div class="pub-links">
+            ${linksHtml}
+        </div>
+    </div>
+    `;
+}
+
+function createSimpleListItem(item) {
+    let authors = item.authors.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    let linksHtml = '';
+
+    // Link icon
+    if (item.link && item.link !== '#' && item.link.trim() !== '') {
+        linksHtml += `<a href="${item.link}" class="icon-link" aria-label="Link" style="color: var(--color-text-muted); margin-left: 0.5rem; text-decoration: none;"><i class="ri-links-line"></i></a>`;
+    }
+
+    // BibTeX copy button
+    if (item.bibtex && item.bibtex.trim() !== '') {
+        const safeBibtex = item.bibtex.replace(/"/g, '&quot;');
+        linksHtml += `<button class="icon-btn bibtex-copy-btn" data-bibtex="${safeBibtex}" onclick="copyBibtex(this)" aria-label="Copy BibTeX" style="margin-left: 0.5rem; font-size: 1rem;"><i class="ri-double-quotes-l"></i></button>`;
+    }
+
+    return `
+    <li style="margin-bottom: 1.5rem;">
+        ${authors}.
+        <strong>${item.title}</strong>
+        <em>${item.venue}</em>, ${item.year}.
+        ${linksHtml}
+    </li>
+    `;
+}
+
+// 간단한 CSV 파서 (따옴표 처리 포함)
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim());
+    const result = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+
+        const row = {};
+        const values = [];
+        let currentVal = '';
+        let inQuotes = false;
+
+        const line = lines[i];
+        for (let j = 0; j < line.length; j++) {
+            const char = line[j];
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                values.push(currentVal.trim());
+                currentVal = '';
+            } else {
+                currentVal += char;
+            }
+        }
+        values.push(currentVal.trim());
+
+        headers.forEach((header, index) => {
+            // 따옴표 제거
+            let val = values[index] || '';
+            if (val.startsWith('"') && val.endsWith('"')) {
+                val = val.substring(1, val.length - 1);
+            }
+            row[header] = val;
+        });
+        result.push(row);
+    }
+    return result;
+}
+
+// BibTeX 복사 기능
+function copyBibtex(btn) {
+    const bibtex = btn.getAttribute('data-bibtex');
+    navigator.clipboard.writeText(bibtex).then(() => {
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="ri-check-line"></i>';
+        setTimeout(() => {
+            btn.innerHTML = originalIcon;
+        }, 1500);
+    }).catch(err => {
+        console.error('Failed to copy BibTeX: ', err);
+    });
+}
 
 // ===========================================
 // 5. CSV 기반 멤버 동적 로딩 (Members Loading)
@@ -801,279 +1122,4 @@ function createMemberCard(member, isKr, isAlumni) {
         </div>
         `;
     }
-}
-
-// ===========================================
-// 4. CSV 기반 출판물 동적 로딩 (CSV Loading)
-// ===========================================
-async function loadPublications(pageType) {
-    try {
-        const response = await fetch('data/publications.csv');
-        const text = await response.text();
-        const rows = parseCSV(text);
-
-        const container = document.getElementById('publication-list');
-        if (!container) return;
-
-        // 현재 언어 확인
-        const currentLang = localStorage.getItem('preferred-lang') || 'kr';
-        const isKr = currentLang === 'kr';
-
-        // 데이터 필터링
-        let filteredData = [];
-
-        if (pageType === 'conference') {
-            filteredData = rows.filter(row => row.type === 'Conference' && parseInt(row.year) >= RECENT_THRESHOLD_YEAR);
-        } else if (pageType === 'journal') {
-            filteredData = rows.filter(row => row.type === 'Journal' && parseInt(row.year) >= RECENT_THRESHOLD_YEAR);
-        } else if (pageType === 'former') {
-            filteredData = rows.filter(row => parseInt(row.year) < RECENT_THRESHOLD_YEAR);
-        }
-
-        if (filteredData.length === 0) {
-            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
-                ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
-            </p>`;
-            return;
-        }
-
-        // 연도별 그룹화
-        const groupedByYear = {};
-        filteredData.forEach(item => {
-            if (!groupedByYear[item.year]) groupedByYear[item.year] = [];
-            groupedByYear[item.year].push(item);
-        });
-
-        // 연도 내림차순 정렬
-        const years = Object.keys(groupedByYear).sort((a, b) => b - a);
-
-        // Former 페이지의 경우 Conference/Journal 섹션 분리가 필요합니다.
-        if (pageType === 'former') {
-            renderFormerPage(filteredData, container, isKr);
-        } else {
-            // 헤더 연도 동적 업데이트 (Conference/Journal)
-            if (pageType === 'conference') {
-                const header = document.getElementById('conference-header');
-                if (header) {
-                    header.setAttribute('data-lang-kr', `컨퍼런스 (${RECENT_THRESHOLD_YEAR}~)`);
-                    header.setAttribute('data-lang-en', `Conference (${RECENT_THRESHOLD_YEAR}~)`);
-                    updateElementText(header);
-                }
-            } else if (pageType === 'journal') {
-                const header = document.getElementById('journal-header');
-                if (header) {
-                    header.setAttribute('data-lang-kr', `저널 (${RECENT_THRESHOLD_YEAR}~)`);
-                    header.setAttribute('data-lang-en', `Journal (${RECENT_THRESHOLD_YEAR}~)`);
-                    updateElementText(header);
-                }
-            }
-
-            renderNormalPage(years, groupedByYear, container, isKr);
-        }
-
-    } catch (error) {
-        console.error('Error loading publications:', error);
-        const container = document.getElementById('publication-list');
-        if (container) {
-            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">Error loading data.</p>`;
-        }
-    }
-}
-
-function renderNormalPage(years, groupedByYear, container, isKr) {
-    let html = '';
-    years.forEach(year => {
-        groupedByYear[year].forEach(item => {
-            html += createPublicationCard(item);
-        });
-    });
-
-    if (html === '') {
-        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
-            ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
-        </p>`;
-    } else {
-        container.innerHTML = `<div style="display: flex; flex-direction: column; gap: 1rem;">${html}</div>`;
-    }
-}
-
-function renderFormerPage(data, container, isKr) {
-    const confData = data.filter(row => row.type === 'Conference').sort((a, b) => b.year - a.year);
-    const jourData = data.filter(row => row.type === 'Journal').sort((a, b) => b.year - a.year);
-
-    const formerYear = RECENT_THRESHOLD_YEAR - 1;
-
-    // Update Intro Text
-    const formerIntro = document.getElementById('former-intro-text');
-    if (formerIntro) {
-        formerIntro.setAttribute('data-lang-kr', `${formerYear}년 이하의 출판물 목록입니다.`);
-        formerIntro.setAttribute('data-lang-en', `List of publications up to ${formerYear}.`);
-        updateElementText(formerIntro);
-    }
-
-    if (confData.length === 0 && jourData.length === 0) {
-        container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
-            ${isKr ? '보관된 논문이 없습니다.' : 'No archived publications found.'}
-        </p>`;
-        return;
-    }
-
-    let html = '';
-
-    // Conference Section
-    if (confData.length > 0) {
-        html += `
-            <div style="margin-bottom: 4rem;">
-                <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                    Conference (~${formerYear})
-                </h2>
-                <ul class="simple-list" style="list-style: none; padding: 0;">
-                    ${confData.map(item => createSimpleListItem(item)).join('')}
-                </ul>
-            </div>
-        `;
-    }
-
-    // Journal Section
-    if (jourData.length > 0) {
-        html += `
-            <div style="margin-bottom: 3rem;">
-                <h2 style="border-bottom: 2px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-                    Journal (~${formerYear})
-                </h2>
-                <ul class="simple-list" style="list-style: none; padding: 0;">
-                    ${jourData.map(item => createSimpleListItem(item)).join('')}
-                </ul>
-            </div>
-        `;
-    }
-
-    container.innerHTML = html;
-}
-
-function createPublicationCard(item) {
-    // 강조 저자 처리 (**K. Kim**)
-    let authors = item.authors.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-    // 링크 버튼 처리
-    let linksHtml = '';
-    if (item.link && item.link !== '#' && item.link.trim() !== '') {
-        linksHtml += `<a href="${item.link}" class="icon-link" aria-label="PDF" target="_blank"><i class="ri-links-line"></i></a>`;
-    }
-    if (item.bibtex && item.bibtex.trim() !== '') {
-        // BibTeX는 data 속성에 저장하고 클릭 시 읽어옴 (따옴표/줄바꿈 방지)
-        const safeBibtex = item.bibtex.replace(/"/g, '&quot;');
-        linksHtml += `<button class="icon-btn bibtex-copy-btn" data-bibtex="${safeBibtex}" onclick="copyBibtex(this)" aria-label="Copy BibTeX"><i class="ri-double-quotes-l"></i></button>`;
-    }
-
-    return `
-    <div class="publication-card">
-        <div class="pub-content">
-            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${item.title}</h3>
-            <p style="color: var(--color-text-muted); margin-bottom: 0.5rem; font-size: 0.95rem;">
-                ${authors}
-            </p>
-            <p style="color: var(--color-accent); font-weight: 500; font-size: 0.9rem;">
-                ${item.venue}, ${item.year} ${item.status ? `[${item.status}]` : ''}
-            </p>
-        </div>
-        <div class="pub-links">
-            ${linksHtml}
-        </div>
-    </div>
-    `;
-}
-
-function createSimpleListItem(item) {
-    let authors = item.authors.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    let linksHtml = '';
-
-    // Link icon
-    if (item.link && item.link !== '#' && item.link.trim() !== '') {
-        linksHtml += `<a href="${item.link}" class="icon-link" aria-label="Link" style="color: var(--color-text-muted); margin-left: 0.5rem; text-decoration: none;"><i class="ri-links-line"></i></a>`;
-    }
-
-    // BibTeX copy button
-    if (item.bibtex && item.bibtex.trim() !== '') {
-        const safeBibtex = item.bibtex.replace(/"/g, '&quot;');
-        linksHtml += `<button class="icon-btn bibtex-copy-btn" data-bibtex="${safeBibtex}" onclick="copyBibtex(this)" aria-label="Copy BibTeX" style="margin-left: 0.5rem; font-size: 1rem;"><i class="ri-double-quotes-l"></i></button>`;
-    }
-
-    return `
-    <li style="margin-bottom: 1.5rem;">
-        ${authors}.
-        <strong>${item.title}</strong>
-        <em>${item.venue}</em>, ${item.year}.
-        ${linksHtml}
-    </li>
-    `;
-}
-
-// 간단한 CSV 파서 (따옴표 처리 포함)
-function parseCSV(text) {
-    const lines = text.trim().split('\n');
-    const headers = lines[0].split(',').map(h => h.trim());
-    const result = [];
-
-    for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-
-        const row = {};
-        const values = [];
-        let currentVal = '';
-        let inQuotes = false;
-
-        const line = lines[i];
-        for (let j = 0; j < line.length; j++) {
-            const char = line[j];
-            if (char === '"') {
-                inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
-                values.push(currentVal.trim());
-                currentVal = '';
-            } else {
-                currentVal += char;
-            }
-        }
-        values.push(currentVal.trim());
-
-        headers.forEach((header, index) => {
-            // 따옴표 제거
-            let val = values[index] || '';
-            if (val.startsWith('"') && val.endsWith('"')) {
-                val = val.substring(1, val.length - 1);
-            }
-            row[header] = val;
-        });
-        result.push(row);
-    }
-    return result;
-}
-
-// BibTeX 복사 기능
-window.copyBibtex = function (btn) {
-    const bibtex = btn.getAttribute('data-bibtex');
-    if (!bibtex) return;
-
-    navigator.clipboard.writeText(bibtex).then(() => {
-        showToast("BibTeX Copied!");
-    }).catch(err => {
-        console.error('Copy failed:', err);
-        // Fallback or Alert
-        alert("Copy failed. Please copy manually.");
-    });
-};
-
-function showToast(message) {
-    // Toast 요소가 없으면 생성
-    let toast = document.getElementById("toast");
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "toast";
-        toast.className = "toast";
-        document.body.appendChild(toast);
-    }
-    toast.innerText = message;
-    toast.className = "toast show";
-    setTimeout(function () { toast.className = toast.className.replace("show", ""); }, 3000);
 }
