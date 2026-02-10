@@ -332,22 +332,28 @@ function renderNewsPage(rows, container, isKr, useWrapper = true) {
         const title = isKr && item.title_kr ? item.title_kr : item.title_en;
         const summary = isKr && item.sum_kr ? item.sum_kr : item.sum_en;
 
+        const btnText = isKr ? '자세히 보기' : 'Read More';
+        const link = item.link && item.link !== '#' ? item.link : '';
         let clickAction = '';
-        let cursorStyle = '';
-        // Always enable pointer and click, passing empty string if no link
-        clickAction = `onclick="openNewsModal('${item.link && item.link !== '#' ? item.link : ''}')"`;
-        cursorStyle = 'cursor: pointer;';
+        let additionalClass = '';
+
+        if (!link) {
+            additionalClass = ' disabled';
+        } else {
+            clickAction = `onclick="openNewsModal('${link}')"`;
+        }
 
         html += `
-        <div class="publication-card" ${clickAction} style="${cursorStyle}">
+        <div class="publication-card">
             <div class="pub-content">
                 <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${title}</h3>
-                <p style="color: var(--color-text-muted); margin-bottom: 0.5rem; font-size: 0.95rem;">
+                <p style=" margin-bottom: 0.5rem; font-size: 0.95rem;">
                     ${summary}
                 </p>
-                <p style="color: var(--color-accent); font-weight: 500; font-size: 0.9rem;">
+                <p style="color: var(--color-text-muted); font-weight: 500; font-size: 0.9rem;">
                     ${item.date}
                 </p>
+                <a href="#" ${clickAction} class="cv-btn${additionalClass}" style="margin-top: 1rem; font-size: 0.85rem; padding: 0.3rem 1rem;">${btnText}</a>
             </div>
         </div>
         `;
@@ -360,42 +366,14 @@ function renderNewsPage(rows, container, isKr, useWrapper = true) {
 }
 
 // Modal Functions
-window.openNewsModal = async function (url) {
-    const modal = document.getElementById('news-modal');
-    const modalBody = document.getElementById('news-modal-body');
-    if (!modal || !modalBody) return;
-
-    // Correct order for opening: display flex -> reflow -> active class
-    modal.style.display = 'flex';
-    // Force reflow
-    void modal.offsetWidth;
-    modal.classList.add('active');
-
-    // Disable body scroll
-    document.body.style.overflow = 'hidden';
-
-    // Handle empty URL (No attached content)
-    if (!url || url.trim() === '') {
-        modalBody.innerHTML = `
-            <div style="text-align: center; padding: 2rem 0; color: var(--color-text-muted);">
-                <p style="margin-bottom: 0.5rem; font-weight: 500; font-size: 1.1rem;">No detailed content.</p>
-                <p>상세 내용이 없습니다.</p>
-            </div>
-        `;
-        return;
-    }
-
-    // Show loading state
-    modalBody.innerHTML = '<p>Loading...</p>';
-
-    // Show loading state
-
+// Helper: Fetch and Render Markdown (Bilingual Support)
+async function fetchAndRenderMarkdown(url) {
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to load content');
         const text = await response.text();
 
-        // Language parsing and rendering (same as before)
+        // Language parsing
         const currentLang = localStorage.getItem('preferred-lang') || 'kr';
         let contentToRender = text;
 
@@ -412,17 +390,49 @@ window.openNewsModal = async function (url) {
             contentToRender = currentLang === 'kr' ? krPart : enPart;
         }
 
-        modalBody.innerHTML = marked.parse(contentToRender);
-
+        if (typeof marked !== 'undefined') {
+            return marked.parse(contentToRender, { breaks: true });
+        } else {
+            console.warn('Marked.js not found. Rendering raw text.');
+            return `<pre style="white-space: pre-wrap; font-family: inherit;">${contentToRender}</pre>`;
+        }
     } catch (error) {
         console.error('Error fetching markdown:', error);
+        throw error;
+    }
+}
+
+window.openNewsModal = async function (url) {
+    // If no URL, do nothing (disabled button case)
+    if (!url || url.trim() === '') return;
+
+    // 1. External Link Check
+    if (url.startsWith('http') || url.startsWith('https')) {
+        window.open(url, '_blank');
+        return;
+    }
+
+    const modal = document.getElementById('news-modal');
+    const modalBody = document.getElementById('news-modal-body');
+    if (!modal || !modalBody) return;
+
+    modal.style.display = 'flex';
+    void modal.offsetWidth;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    modalBody.innerHTML = '<p>Loading...</p>';
+
+    try {
+        const html = await fetchAndRenderMarkdown(url);
+        modalBody.innerHTML = html;
+    } catch (error) {
         modalBody.innerHTML = `
             <div style="text-align: center; padding: 2rem 0; color: var(--color-text-muted);">
                 <p style="margin-bottom: 0.5rem;">Content not found.</p>
                 <p>내용을 찾을 수 없습니다.</p>
             </div>
         `;
-        console.log("Failed to load news content. Please check if the markdown file exists.");
     }
 };
 
@@ -440,11 +450,87 @@ window.closeNewsModal = function () {
 
 // Close modal when clicking outside
 window.addEventListener('click', (e) => {
-    const modal = document.getElementById('news-modal');
-    if (e.target === modal) {
+    const newsModal = document.getElementById('news-modal');
+    if (newsModal && e.target === newsModal) {
         closeNewsModal();
     }
+    const cvModal = document.getElementById('cv-modal');
+    if (cvModal && e.target === cvModal) {
+        closeCVModal();
+    }
 });
+
+// ===========================================
+// CV Modal Functions
+// ===========================================
+function initCVModal() {
+    if (document.getElementById('cv-modal')) return;
+
+    const modalHtml = `
+    <div id="cv-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">CV</span>
+                <button class="modal-close" onclick="closeCVModal()">&times;</button>
+            </div>
+            <div id="cv-modal-body" style="padding: 2.5rem; overflow-y: auto; flex-grow: 1;">
+                <!-- Content -->
+            </div>
+        </div>
+    </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+window.openCVModal = async function (url) {
+    // If no URL (disabled button case), do nothing
+    if (!url || url.trim() === '') return;
+
+    initCVModal(); // Ensure modal exists
+
+    const modal = document.getElementById('cv-modal');
+    const modalBody = document.getElementById('cv-modal-body');
+
+    if (!modal || !modalBody) return;
+
+    modal.style.display = 'flex';
+    void modal.offsetWidth; // Force reflow
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // Handle External Link (Should ideally be handled by onclick in HTML, but for safety)
+    if (url.startsWith('http')) {
+        window.open(url, '_blank');
+        closeCVModal();
+        return;
+    }
+
+    // Load Markdown
+    modalBody.innerHTML = '<p>Loading...</p>';
+
+    try {
+        const html = await fetchAndRenderMarkdown(url);
+        modalBody.innerHTML = html;
+    } catch (error) {
+        modalBody.innerHTML = `
+            <div style="text-align: center; padding: 2rem 0; color: var(--color-text-muted);">
+                <p style="margin-bottom: 0.5rem;">Content not found.</p>
+                <p>내용을 찾을 수 없습니다.</p>
+            </div>
+        `;
+    }
+};
+
+window.closeCVModal = function () {
+    const modal = document.getElementById('cv-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+};
 
 // ===========================================
 // 4. CSV 기반 출판물 동적 로딩 (CSV Loading)
@@ -649,6 +735,21 @@ function createMemberCard(member, isKr, isAlumni) {
             <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${name} <span style="font-weight: normal; font-size: 0.9rem;">(${member.year})</span></h3>
             <p style="color: var(--color-accent); font-weight: 500; font-size: 0.95rem; margin-bottom: 0.5rem;">${member.current || ''}</p>
             ${linksSection}
+            ${(function () {
+                const cvLink = member.cv ? member.cv.trim() : '';
+                let onClick = '';
+                let additionalClass = '';
+
+                if (!cvLink) {
+                    additionalClass = ' disabled';
+                } else if (cvLink.startsWith('http')) {
+                    onClick = `onclick="window.open('${cvLink}', '_blank'); return false;"`;
+                } else {
+                    onClick = `onclick="openCVModal('${cvLink}')"`;
+                }
+
+                return `<a href="#" ${onClick} class="cv-btn${additionalClass}" style="margin-top: 0.5rem; padding: 0.3rem 1rem; font-size: 0.85rem;">CV</a>`;
+            })()}
         </div>
         `;
     } else {
@@ -676,6 +777,26 @@ function createMemberCard(member, isKr, isAlumni) {
                 ${socialHtml ? `<div class="social-links justify-center" style="margin-bottom: ${academicHtml ? '0.5rem' : '0'};">${socialHtml}</div>` : ''}
                 
                 ${academicHtml ? `<div class="academic-links justify-center" style="gap: 0.5rem; flex-wrap: wrap;">${academicHtml}</div>` : ''}
+
+                ${/* CV Button Logic */''}
+                ${(function () {
+
+                const cvLink = member.cv ? member.cv.trim() : '';
+                let onClick = '';
+                let additionalClass = '';
+
+                if (!cvLink) {
+                    additionalClass = ' disabled';
+                } else if (cvLink.startsWith('http')) {
+                    // External link -> Open in new tab directly
+                    onClick = `onclick="window.open('${cvLink}', '_blank'); return false;"`;
+                } else {
+                    // Internal md -> Open Modal
+                    onClick = `onclick="openCVModal('${cvLink}')"`;
+                }
+
+                return `<a href="#" ${onClick} class="cv-btn${additionalClass}">CV</a>`;
+            })()}
             </div>
         </div>
         `;

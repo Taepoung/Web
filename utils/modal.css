@@ -85,60 +85,84 @@
 }
 
 /* Modal Body (Scrollable) */
-#news-modal-body {
+/* Shared Modal Body Styles */
+#news-modal-body,
+#cv-modal-body {
     padding: 2.5rem;
     overflow-y: auto;
     flex-grow: 1;
-    /* Take remaining space */
 }
 
 /* Typography inside Modal (Markdown Content) */
 #news-modal-body h1,
+#cv-modal-body h1,
 #news-modal-body h2,
-#news-modal-body h3 {
+#cv-modal-body h2,
+#news-modal-body h3,
+#cv-modal-body h3 {
     margin-top: 1.5rem;
     margin-bottom: 1rem;
     color: var(--color-text-main);
 }
 
-#news-modal-body h1 {
+#news-modal-body h1,
+#cv-modal-body h1 {
     font-size: 1.8rem;
 }
 
-#news-modal-body h2 {
+#news-modal-body h2,
+#cv-modal-body h2 {
     font-size: 1.5rem;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 0.5rem;
 }
 
-#news-modal-body h3 {
+#news-modal-body h3,
+#cv-modal-body h3 {
     font-size: 1.25rem;
 }
 
-#news-modal-body p {
+#news-modal-body p,
+#cv-modal-body p {
     margin-bottom: 1rem;
     line-height: 1.7;
     color: var(--color-text-main);
 }
 
+/* Fix for lists */
 #news-modal-body ul,
-#news-modal-body ol {
+#cv-modal-body ul,
+#news-modal-body ol,
+#cv-modal-body ol {
     margin-bottom: 1rem;
     padding-left: 1.5rem;
+    /* Ensure indentation */
+    list-style-position: outside;
+    /* Prevent sticking out */
 }
 
-#news-modal-body li {
+#news-modal-body li,
+#cv-modal-body li {
     margin-bottom: 0.5rem;
     line-height: 1.6;
+}
+
+#news-modal-body ul li,
+#cv-modal-body ul li {
     list-style-type: disc;
 }
 
-#news-modal-body a {
+#news-modal-body ol li,
+#cv-modal-body ol li {
+    list-style-type: decimal;
+}
+
+#news-modal-body a,
+#cv-modal-body a {
     color: var(--color-accent);
     text-decoration: underline;
 }
 
-#news-modal-body blockquote {
+#news-modal-body blockquote,
+#cv-modal-body blockquote {
     border-left: 4px solid var(--color-accent);
     padding-left: 1rem;
     margin-left: 0;
@@ -146,9 +170,17 @@
     font-style: italic;
 }
 
-#news-modal-body img {
+#news-modal-body img,
+#cv-modal-body img {
     max-width: 100%;
     height: auto;
     border-radius: var(--radius-sm);
     margin: 1rem 0;
+}
+
+#news-modal-body hr,
+#cv-modal-body hr {
+    margin: 2rem 0;
+    border: 0;
+    border-top: 1px solid #e2e8f0;
 }

@@ -1014,3 +1014,37 @@ a.icon-link[href="#"] {
 .title-fade-up {
     animation: fadeUp 0.6s ease-out forwards;
 }
+
+/* CV Button Style */
+/* CV Button Style */
+.cv-btn {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    border: 2px solid var(--color-accent);
+    background-color: white;
+    color: var(--color-accent);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    margin-top: 1rem;
+}
+
+.cv-btn:hover:not(.disabled) {
+    background-color: var(--color-accent);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cv-btn.disabled {
+    border-color: #cbd5e1;
+    /* Light gray border */
+    color: #94a3b8;
+    /* Muted text color */
+    cursor: default;
+    pointer-events: none;
+    /* Prevent clicks */
+}
