@@ -292,8 +292,12 @@ window.scrollToTop = function () {
 // ===========================================
 // Research Loading
 // ===========================================
-async function loadResearch(pageType, pageNum = 1) {
+async function loadResearch(pageType, pageNum = 1, shouldScroll = false) {
     try {
+        if (shouldScroll) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         const container = document.getElementById('news-list');
         if (!container) return;
 
@@ -339,7 +343,7 @@ async function loadResearch(pageType, pageNum = 1) {
 
         // Pagination (Top)
         const topPag = document.createElement('div');
-        renderPagination(topPag, totalPages, pageNum, (newPage) => loadResearch(pageType, newPage));
+        renderPagination(topPag, totalPages, pageNum, (newPage) => loadResearch(pageType, newPage, true));
         container.appendChild(topPag);
 
         // Content
@@ -349,12 +353,8 @@ async function loadResearch(pageType, pageNum = 1) {
 
         // Pagination (Bottom)
         const bottomPag = document.createElement('div');
-        renderPagination(bottomPag, totalPages, pageNum, (newPage) => loadResearch(pageType, newPage));
+        renderPagination(bottomPag, totalPages, pageNum, (newPage) => loadResearch(pageType, newPage, true));
         container.appendChild(bottomPag);
-
-        if (startIndex > 0 || pageNum > 1) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
 
     } catch (error) {
         console.error('Error loading research:', error);
@@ -437,8 +437,12 @@ document.addEventListener('keydown', (e) => {
 // ===========================================
 // News Loading & Modal
 // ===========================================
-async function loadNews(pageType, pageNum = 1) {
+async function loadNews(pageType, pageNum = 1, shouldScroll = false) {
     try {
+        if (shouldScroll) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         if (currentNewsRows.length === 0) {
             const response = await fetch('data/news.csv');
             const text = await response.text();
@@ -447,13 +451,11 @@ async function loadNews(pageType, pageNum = 1) {
 
         const rows = currentNewsRows;
         const container = document.getElementById('news-list');
-        // For 'home' page, we use 'recent-news-list', so 'news-list' might be null.
         if (!container && pageType !== 'home') return;
 
         const currentLang = localStorage.getItem('preferred-lang') || 'kr';
         const isKr = currentLang === 'kr';
 
-        // Filter based on pageType
         let filteredRows = [];
         let targetContainer = container;
 
@@ -478,10 +480,8 @@ async function loadNews(pageType, pageNum = 1) {
             return;
         }
 
-        // Sort by date descending
         filteredRows.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        // Home page or Latest News logic (not paginated)
         if (pageType === 'home' || pageType === 'news-latest') {
             const limit = pageType === 'home' ? 3 : (LATEST_NEWS_COUNT > 0 ? LATEST_NEWS_COUNT : 20);
             filteredRows = filteredRows.slice(0, limit);
@@ -489,7 +489,6 @@ async function loadNews(pageType, pageNum = 1) {
             return;
         }
 
-        // Pagination logic for News pages
         const totalItems = filteredRows.length;
         const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
         const startIndex = (pageNum - 1) * ITEMS_PER_PAGE;
@@ -497,24 +496,17 @@ async function loadNews(pageType, pageNum = 1) {
 
         targetContainer.innerHTML = '';
 
-        // Pagination (Top)
         const topPag = document.createElement('div');
-        renderPagination(topPag, totalPages, pageNum, (newPage) => loadNews(pageType, newPage));
+        renderPagination(topPag, totalPages, pageNum, (newPage) => loadNews(pageType, newPage, true));
         targetContainer.appendChild(topPag);
 
-        // Content
         const contentArea = document.createElement('div');
         renderNewsPage(pagedRows, contentArea, isKr, true);
         targetContainer.appendChild(contentArea);
 
-        // Pagination (Bottom)
         const bottomPag = document.createElement('div');
-        renderPagination(bottomPag, totalPages, pageNum, (newPage) => loadNews(pageType, newPage));
+        renderPagination(bottomPag, totalPages, pageNum, (newPage) => loadNews(pageType, newPage, true));
         targetContainer.appendChild(bottomPag);
-
-        if (startIndex > 0 || pageNum > 1) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
 
     } catch (error) {
         console.error('Error loading news:', error);
