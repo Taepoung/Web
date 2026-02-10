@@ -48,6 +48,7 @@ async function loadComponents() {
         setActiveNavLink();
         hideEmptyLinks();
         initDropdownToggle();
+        initScrollTopButton();
 
     } catch (error) {
         console.error('Error loading components:', error);
@@ -258,6 +259,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// ===========================================
+// Scroll To Top Button
+// ===========================================
+function initScrollTopButton() {
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+    if (!scrollToTopBtn) return;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            scrollToTopBtn.classList.add('visible');
+        } else {
+            scrollToTopBtn.classList.remove('visible');
+        }
+    });
+}
+
+window.scrollToTop = function () {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+};
+
 
 // ===========================================
 // Research Loading
