@@ -574,8 +574,7 @@ ul {
     position: absolute;
     top: 50%;
     left: 50%;
-    /* 1.2로 확대 후 살짝 아래로 내려 하단 자막을 크롭 */
-    transform: translate(-50%, -42%) scale(1.2);
+    transform: translate(-50%, -50%);
     min-width: 100%;
     min-height: 100%;
     width: auto;
