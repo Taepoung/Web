@@ -12,7 +12,7 @@ The `members.csv` file uses the following columns. Please ensure you maintain th
 
 | Column (열) | Description (KR) | Description (EN) | Example (예시) |
 | :--- | :--- | :--- | :--- |
-| **Type** | 구성원 유형 (Post-Doc, Ph.D., M.S., Undergraduate, Intern, Alumni-Ph.D., Alumni-M.S., Alumni-Undergraduate, Alumni-Intern, Supporter) | Member Category | `Ph.D.` |
+| **Type** | 구성원 유형 (Post-Doc, Ph.D., M.S., Undergraduate, Intern, External Researcher, Alumni-Ph.D., Alumni-M.S., Alumni-Undergraduate, Alumni-Intern, Supporter) | Member Category | `Ph.D.` |
 | **image** | 프로필 사진 경로 | Profile image path | `data/members/kim.jpg` |
 | **name_kr** | 한국어 이름 (Alumni는 생략 가능) | Korean Name | `김철수` |
 | **name_en** | 영어 이름 | English Name | `Chulsoo Kim` |
@@ -42,6 +42,10 @@ The `members.csv` file uses the following columns. Please ensure you maintain th
     -   If a value contains a comma, wrap the entire value in double quotes (`"`).
     -   열 구분은 쉼표(`,`)를 사용합니다.
     -   값 안에 쉼표가 포함된 경우 전체를 큰따옴표(`"`)로 감싸주세요.
+
+2.  **Line Breaks (줄바꿈 처리)**:
+    -   If you want to apply a line break in the `intro_kr` or `intro_en`, insert the newline character literally as `\n` in text. 
+    -   소개글(`intro`)에서 줄바꿈이 필요한 경우 줄을 바꾸고 싶은 위치에 `\n` 을 적어주시면 웹 화면에서 반영됩니다.
 
 2.  **Images (이미지)**:
     -   Recommended size: Square (1:1), e.g., 400x400px.

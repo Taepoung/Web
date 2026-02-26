@@ -1052,6 +1052,7 @@ function renderStudentsPage(rows, container, isKr) {
     const masters = rows.filter(r => r.Type === 'M.S.');
     const undergrads = rows.filter(r => r.Type === 'Undergraduate');
     const interns = rows.filter(r => r.Type === 'Intern');
+    const externals = rows.filter(r => r.Type === 'External Researcher');
 
     let html = '';
 
@@ -1060,6 +1061,7 @@ function renderStudentsPage(rows, container, isKr) {
     if (masters.length > 0) html += createMemberSection(isKr ? '석사 과정' : "Master's Students", masters, isKr, 'grid');
     if (undergrads.length > 0) html += createMemberSection(isKr ? '학부 연구생' : 'Undergraduate Students', undergrads, isKr, 'grid');
     if (interns.length > 0) html += createMemberSection(isKr ? '연구 인턴' : 'Research Interns', interns, isKr, 'grid');
+    if (externals.length > 0) html += createMemberSection(isKr ? '외부 연구원' : 'External Researchers', externals, isKr, 'grid');
 
     container.innerHTML = html;
 }
@@ -1226,7 +1228,7 @@ function createMemberCard(member, isKr, isAlumni) {
             </p>
             
             <p style="color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1;">
-                ${isKr && member.intro_kr ? member.intro_kr : member.intro_en || ''}
+                ${(isKr && member.intro_kr ? member.intro_kr : member.intro_en || '').replace(/\\n/g, '<br>')}
             </p>
 
             <div style="width: 100%; border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
