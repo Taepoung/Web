@@ -1,4 +1,15 @@
 /* ==========================================================================
+   [커스텀 폰트 설정 (Custom Font)]
+   ========================================================================== */
+@font-face {
+    font-family: 'CustomFont';
+    src: url('../asset/font.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ==========================================================================
    [디자인 시스템 및 설정 (Design System & Variables)]
    이 곳에서 웹사이트의 전체적인 색상, 폰트, 간격 등을 설정할 수 있습니다.
    이 값들만 변경해도 사이트의 분위기가 크게 바뀝니다.
@@ -29,8 +40,8 @@
        [폰트 설정 (Typography)] 
        Google Fonts에서 폰트를 가져와서 여기에 적용할 수 있습니다.
     */
-    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-heading: 'CustomFont', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'CustomFont', 'Inter', system-ui, -apple-system, sans-serif;
 
     /* [간격 및 기타 설정 (Spacing & Misc)] - 초보자라면 건드리지 않아도 됩니다. */
     --spacing-sm: 0.5rem;
@@ -62,7 +73,7 @@
 }
 
 body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+    font-family: 'CustomFont', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
     color: var(--color-text-main);
     background-color: #ffffff;
     line-height: 1.6;
@@ -138,7 +149,10 @@ ul {
 .btn-outline {
     border: 2px solid var(--color-accent);
     color: var(--color-accent);
-    background: transparent;
+    /* 배경 하양, 투명도 0.7 (70% 불투명). 숫자를 0.0 ~ 1.0 사이로 조절 가능합니다. */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    /* 뒷배경을 살짝 흐리게 해서 글자가 더 잘 보이게 함 */
 }
 
 .btn-outline:hover {
@@ -548,9 +562,46 @@ ul {
     text-align: center;
     position: relative;
     overflow: hidden;
-    /* 배경: 은은한 그라데이션 + 주황빛 포인트 */
+    /* 기본 배경: 은은한 그라데이션 + 주황빛 포인트 (영상이 없을 때 표시됨) */
     background: radial-gradient(circle at 50% 30%, #fff7ed 0%, transparent 60%),
         linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%);
+}
+
+/* 영상 배경 설정 (블러 처리 및 크기 조절) - HTML에 영상이 있을 경우에만 보임 */
+.main-video-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: 0;
+    /* 글자가 잘 보이도록 블러(blur)와 어둡게(brightness) 처리 */
+    filter: blur(6px) brightness(0.5);
+    opacity: 1;
+    object-fit: cover;
+    pointer-events: none;
+    /* 클릭 방지 */
+}
+
+/* 영상이 있을 때(main-video-bg 형제로 컨테이너가 있을 때) 덮이는 그라데이션 오버레이 */
+.main:has(.main-video-bg) .main-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 30%, rgba(255, 247, 237, 0.1) 0%, transparent 60%),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(31, 31, 31, 0.4) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* 영상이 사용될 경우, 기본 배경 패턴을 숨김 */
+.main:has(.main-video-bg)::before {
+    display: none;
 }
 
 /* 배경 패턴 (선택사항, 모눈종이 느낌의 점 패턴) */
@@ -594,7 +645,7 @@ ul {
     letter-spacing: -0.02em;
     /* 자간 좁힘 (세련된 느낌) */
 
-    /* 글자에 그라데이션 효과 */
+    /* 기본 글자 그라데이션 효과 (영상이 없을 때) */
     background: linear-gradient(to right, var(--color-primary) 20%, var(--color-accent));
     -webkit-background-clip: text;
     background-clip: text;
@@ -605,9 +656,19 @@ ul {
     opacity: 0;
 }
 
+/* 영상이 있을 때 제목 그라데이션 변경 및 그림자 추가 */
+.main:has(.main-video-bg) h1 {
+    background: linear-gradient(to right, #ffffff 20%, var(--color-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
 .main p {
     font-size: 1.35rem;
     color: var(--color-text-muted);
+    /* 기본 색상 (영상이 없을 때) */
     max-width: 650px;
     margin: 0 auto 3rem;
     font-weight: 500;
@@ -616,6 +677,11 @@ ul {
     /* 애니메이션 (딜레이) */
     animation: fadeUp 0.8s ease-out 0.2s forwards;
     opacity: 0;
+}
+
+/* 영상이 있을 때 설명 텍스트 밝게 변경 */
+.main:has(.main-video-bg) p {
+    color: #f1f5f9;
 }
 
 /* 버튼 그룹 */

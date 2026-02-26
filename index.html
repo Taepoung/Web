@@ -41,6 +41,33 @@
 
   <!-- [Main Section] -->
   <section class="main">
+    <!-- 
+      ===============================================================
+      [배경 영상 설정 가이드]
+      유튜브 링크나 내부 영상 파일을 사용할 수 있습니다.
+      둘 중 하나만 선택해서 주석을 지우고 사용하세요.
+
+    * 주의: 주석을 해제하여 영상 코드가 활성화되면 글자색과 배경이
+    영상에 맞게 자동으로 최적화됩니다. 다시 주석 처리하면 원래의
+    하얀색 배경과 어두운 글자색으로 돌아옵니다.
+    ===============================================================
+    -->
+
+    <!-- 옵션 1: [내부 파일 사용 시] 아래 코드를 주석 해제하고 src 경로에 영상 파일(mp4 등)을 넣으세요. -->
+    <video class="main-video-bg" autoplay loop muted playsinline>
+      <source src="asset/video.mp4" type="video/mp4">
+    </video>
+
+    <!-- 옵션 2: [유튜브 사용 시] 아래 코드를 주석 해제하고 VIDEO_ID 부분에 유튜브 영상 ID를 넣으세요. -->
+    <!--
+    <iframe class="main-video-bg" src="https://www.youtube.com/watch?v=upCJTl7dPw0" frameborder="0"
+      allow="autoplay; fullscreen" allowfullscreen></iframe>
+    -->
+
+
+    <!-- 영상 오버레이 (영상이 활성화될 때만 적용됨) -->
+    <div class="main-overlay"></div>
+
     <div class="container">
       <!-- 메인 제목 -->
       <h1 data-lang-kr="양방향 AI-소프트웨어 공학 연구실" data-lang-en="Bidirectional AI-Software Engineering Lab">
