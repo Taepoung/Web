@@ -562,6 +562,8 @@ ul {
     text-align: center;
     position: relative;
     overflow: hidden;
+    padding: 6rem 1rem;
+    /* 내용이 위아래로 길어질 때 붙지 않도록 여백 추가 */
     /* 기본 배경: 은은한 그라데이션 + 주황빛 포인트 (영상이 없을 때 표시됨) */
     background: radial-gradient(circle at 50% 30%, #fff7ed 0%, transparent 60%),
         linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%);
@@ -572,7 +574,8 @@ ul {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    /* 1.2로 확대 후 살짝 아래로 내려 하단 자막을 크롭 */
+    transform: translate(-50%, -42%) scale(1.2);
     min-width: 100%;
     min-height: 100%;
     width: auto;
