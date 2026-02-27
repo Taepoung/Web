@@ -731,26 +731,42 @@ window.closeCVModal = function () {
 // ===========================================
 // 4. CSV 기반 출판물 동적 로딩 (CSV Loading)
 // ===========================================
-async function loadPublications(pageNum = 1, scrollToTop = false) {
+let currentPubFilter = 'All'; // 전역으로 필터 상태 관리
+
+async function loadPublications(pageNum = 1, scrollToTop = false, filterCategory = currentPubFilter) {
     try {
+        currentPubFilter = filterCategory; // 상태 업데이트
         const response = await fetch('data/publications.csv');
         const text = await response.text();
         const rows = parseCSV(text);
 
         const container = document.getElementById('publication-list');
+        const filterContainer = document.getElementById('publication-filters');
         if (!container) return; // 현재 페이지에 해당 리스트가 없으면 종료
 
         const currentLang = localStorage.getItem('preferred-lang') || 'kr';
         const isKr = currentLang === 'kr';
 
-        // 1. Filter out empty rows, sort descending by year
+        // 0. Render Filter Buttons
+        if (filterContainer) {
+            renderPublicationFilters(filterContainer, isKr);
+        }
+
+        // 1. Filter out empty rows & apply Category Filter, then sort descending by year
         let filteredData = rows.filter(r => r.year && r.year.trim() !== '');
+
+        if (currentPubFilter !== 'All') {
+            filteredData = filteredData.filter(r =>
+                r.type && r.type.toLowerCase() === currentPubFilter.toLowerCase()
+            );
+        }
+
         filteredData.sort((a, b) => b.year - a.year);
 
         // 2. Pagination Logic
         if (filteredData.length === 0) {
             container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
-                ${isKr ? '등록된 논문이 없습니다.' : 'No publications found.'}
+                ${isKr ? '해당 분류에 등록된 논문이 없습니다.' : 'No publications found for this category.'}
             </p>`;
             return;
         }
@@ -807,6 +823,23 @@ async function loadPublications(pageNum = 1, scrollToTop = false) {
             container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">Error loading data.</p>`;
         }
     }
+}
+
+function renderPublicationFilters(container, isKr) {
+    const filters = [
+        { id: 'All', labelKr: '전체', labelEn: 'All' },
+        { id: 'Conference', labelKr: '학회', labelEn: 'Conference' },
+        { id: 'Journal', labelKr: '저널', labelEn: 'Journal' }
+    ];
+
+    let html = '';
+    filters.forEach(f => {
+        const isActive = currentPubFilter === f.id ? 'active' : '';
+        const label = isKr ? f.labelKr : f.labelEn;
+        html += `<button class="pub-filter-btn ${isActive}" onclick="loadPublications(1, false, '${f.id}')">${label}</button>`;
+    });
+
+    container.innerHTML = html;
 }
 
 function renderNormalPage(rows, container, isKr) {
