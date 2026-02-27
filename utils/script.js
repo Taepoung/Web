@@ -4,12 +4,12 @@
 */
 
 // [News] 최신 소식 페이지에 표시할 뉴스 개수 (0 = 제한 없음)
-const LATEST_NEWS_COUNT = 10;
+const LATEST_NEWS_COUNT = 6;
 
 // Pagination Configuration
-const ITEMS_PER_PAGE = 7;
+const ITEMS_PER_PAGE = 5;
 let currentNewsRows = []; // Store news items for pagination
-let currentResearchRows = []; // Store research items for pagination
+let currentProjectRows = []; // Store project items for pagination
 
 
 // ===========================================
@@ -104,9 +104,9 @@ function initLanguage() {
             else if (pageType === 'publications') {
                 loadPublications();
             }
-            // Research pages
-            else if (['research-ongoing', 'research-previous'].includes(pageType)) {
-                loadResearch(pageType);
+            // Project pages
+            else if (pageType === 'project') {
+                loadProject();
             }
         }
     }
@@ -247,9 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (['news-latest', 'news-research', 'news-other'].includes(pageType)) {
             loadNews(pageType);
         }
-        // [연구 페이지] Ongoing, Previous
-        else if (['research-ongoing', 'research-previous'].includes(pageType)) {
-            loadResearch(pageType);
+        // [프로젝트 페이지] Project (Unified Ongoing/Previous)
+        else if (pageType === 'project') {
+            loadProject();
         }
         // [메인 페이지] Home (Recent News 4 items)
         else if (pageType === 'home') {
@@ -283,48 +283,80 @@ window.scrollToTop = function () {
 
 
 // ===========================================
-// Research Loading
+// Project Loading
 // ===========================================
-async function loadResearch(pageType, pageNum = 1, shouldScroll = false) {
+let currentProjectFilter = 'All'; // 전역으로 필터 상태 관리
+
+async function loadProject(pageNum = 1, shouldScroll = false, filterCategory = currentProjectFilter) {
     try {
+        currentProjectFilter = filterCategory; // 상태 업데이트
         if (shouldScroll) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         const container = document.getElementById('news-list');
+        const filterContainer = document.getElementById('project-filters');
         if (!container) return;
 
-        if (currentResearchRows.length === 0) {
-            const response = await fetch('data/research.csv');
+        if (currentProjectRows.length === 0) {
+            const response = await fetch('data/project.csv');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const text = await response.text();
-            currentResearchRows = parseCSV(text);
+            currentProjectRows = parseCSV(text);
         }
 
-        const rows = currentResearchRows;
+        const rows = currentProjectRows;
         const currentLang = localStorage.getItem('preferred-lang') || 'kr';
         const isKr = currentLang === 'kr';
 
-        // Filter based on pageType and Status column
-        let filteredRows = [];
+        // Render Filter Buttons
+        if (filterContainer) {
+            renderProjectFilters(filterContainer, isKr);
+        }
 
-        if (pageType === 'research-ongoing') {
-            filteredRows = rows.filter(r => r.status && r.status.toLowerCase() === 'ongoing');
-        } else if (pageType === 'research-previous') {
-            filteredRows = rows.filter(r => r.status && r.status.toLowerCase() === 'previous');
+        let filteredRows = [];
+        const currentYear = new Date().getFullYear();
+
+        if (currentProjectFilter === 'All') {
+            filteredRows = rows;
+        } else if (currentProjectFilter === 'Ongoing') {
+            filteredRows = rows.filter(r => {
+                const endStr = r.end ? r.end.trim() : '';
+                if (endStr === '') return true; // Empty end date means ongoing
+                const endYear = parseInt(endStr.split(/[.-]/)[0], 10);
+                return !isNaN(endYear) && endYear >= currentYear;
+            });
+        } else if (currentProjectFilter === 'Previous') {
+            filteredRows = rows.filter(r => {
+                const endStr = r.end ? r.end.trim() : '';
+                if (endStr === '') return false; // Empty means ongoing, not previous
+                const endYear = parseInt(endStr.split(/[.-]/)[0], 10);
+                return !isNaN(endYear) && endYear < currentYear;
+            });
         }
 
         if (filteredRows.length === 0) {
             container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">
-                ${isKr ? '등록된 연구가 없습니다.' : 'No registered research found.'}
+                ${isKr ? '해당 필터에 등록된 프로젝트가 없습니다.' : 'No projects found for this category.'}
             </p>`;
             return;
         }
 
-        // Sort by date descending
-        filteredRows.sort((a, b) => new Date(b.date) - new Date(a.date));
+        // Sort logic: 
+        // 1. Ongoing (`end` is empty) comes first
+        // 2. Then sort by `start` date descending
+        filteredRows.sort((a, b) => {
+            const aOngoing = !a.end || a.end.trim() === '';
+            const bOngoing = !b.end || b.end.trim() === '';
+
+            if (aOngoing && !bOngoing) return -1;
+            if (!aOngoing && bOngoing) return 1;
+
+            // If both are ongoing or both are previous, sort by start date
+            return new Date(b.start) - new Date(a.start);
+        });
 
         // Pagination logic
         const totalItems = filteredRows.length;
@@ -336,26 +368,42 @@ async function loadResearch(pageType, pageNum = 1, shouldScroll = false) {
 
         // Pagination (Top)
         const topPag = document.createElement('div');
-        renderPagination(topPag, totalPages, pageNum, (newPage) => loadResearch(pageType, newPage, true));
+        renderPagination(topPag, totalPages, pageNum, (newPage) => loadProject(newPage, true));
         container.appendChild(topPag);
 
         // Content
         const contentArea = document.createElement('div');
-        renderNewsPage(pagedRows, contentArea, isKr, true);
+        renderProjectPage(pagedRows, contentArea, isKr, true);
         container.appendChild(contentArea);
 
         // Pagination (Bottom)
         const bottomPag = document.createElement('div');
-        renderPagination(bottomPag, totalPages, pageNum, (newPage) => loadResearch(pageType, newPage, true));
+        renderPagination(bottomPag, totalPages, pageNum, (newPage) => loadProject(newPage, true));
         container.appendChild(bottomPag);
 
     } catch (error) {
-        console.error('Error loading research:', error);
+        console.error('Error loading project:', error);
         const container = document.getElementById('news-list');
         if (container) {
-            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">Error loading research.</p>`;
+            container.innerHTML = `<p style="color: var(--color-text-muted); text-align: center; padding: 3rem 0;">Error loading projects.</p>`;
         }
     }
+}
+
+function renderProjectFilters(container, isKr) {
+    const filters = [
+        { id: 'All', labelKr: '전체', labelEn: 'All' },
+        { id: 'Ongoing', labelKr: '진행 중', labelEn: 'Ongoing' },
+        { id: 'Previous', labelKr: '종료', labelEn: 'Previous' }
+    ];
+
+    let html = '';
+    filters.forEach(f => {
+        const isActive = currentProjectFilter === f.id ? 'active' : '';
+        const label = isKr ? f.labelKr : f.labelEn;
+        html += `<button class="pub-filter-btn ${isActive}" onclick="loadProject(1, false, '${f.id}')">${label}</button>`;
+    });
+    container.innerHTML = html;
 }
 
 // ===========================================
@@ -547,6 +595,63 @@ function renderNewsPage(rows, container, isKr, useWrapper = true) {
                     </p>
                     <p style="color: var(--color-text-muted); font-weight: 500; font-size: 0.9rem;">
                         ${item.date}
+                    </p>
+                    <a href="#" ${clickAction} class="cv-btn${additionalClass}" style="margin-top: 1rem; font-size: 0.85rem; padding: 0.3rem 1rem;">${btnText}</a>
+                </div>
+            </div>
+        </div>
+        `;
+    });
+
+    if (useWrapper) {
+        html += '</div>';
+    }
+    container.innerHTML = html;
+}
+
+function renderProjectPage(rows, container, isKr, useWrapper = true) {
+    let html = '';
+    if (useWrapper) {
+        html += '<div style="display: flex; flex-direction: column; gap: 1rem;">';
+    }
+
+    rows.forEach(item => {
+        const title = isKr && item.title_kr ? item.title_kr : item.title_en;
+        const summary = isKr && item.sum_kr ? item.sum_kr : item.sum_en;
+
+        const btnText = isKr ? '자세히 보기' : 'Read More';
+        const link = item.link && item.link !== '#' ? item.link : '';
+        let clickAction = '';
+        let additionalClass = '';
+
+        if (!link) {
+            additionalClass = ' disabled';
+        } else {
+            clickAction = `onclick="openNewsModal('${link}')"`; // We reuse the news modal since the rendering is identical
+        }
+
+        const defaultThumb = 'asset/default-thumb.png';
+        const thumbSrc = item.thumbnail && item.thumbnail.trim() !== '' ? item.thumbnail : defaultThumb;
+
+        // Date Handling: start ~ end (Year only)
+        const startStr = item.start ? item.start.trim().split('.')[0].split('-')[0] : '';
+        const endStr = item.end ? item.end.trim().split('.')[0].split('-')[0] : '';
+        const presentStr = isKr ? '현재' : 'Present';
+        const dateDisplay = endStr === '' ? `${startStr} ~ ${presentStr}` : `${startStr} ~ ${endStr}`;
+
+        html += `
+        <div class="publication-card">
+            <div class="pub-card-layout">
+                <div class="pub-img-wrapper">
+                    <img src="${thumbSrc}" onerror="this.onerror=null; this.src='${defaultThumb}';" alt="Thumbnail">
+                </div>
+                <div class="pub-content">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${title}</h3>
+                    <p style=" margin-bottom: 0.5rem; font-size: 0.95rem;">
+                        ${summary.replace(/\\n|\n/g, '<br>')}
+                    </p>
+                    <p style="color: var(--color-text-muted); font-weight: 500; font-size: 0.9rem;">
+                        ${dateDisplay}
                     </p>
                     <a href="#" ${clickAction} class="cv-btn${additionalClass}" style="margin-top: 1rem; font-size: 0.85rem; padding: 0.3rem 1rem;">${btnText}</a>
                 </div>

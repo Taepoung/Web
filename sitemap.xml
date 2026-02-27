@@ -16,26 +16,14 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://taepoung.github.io/Web/Research_ongoing.html</loc>
+    <loc>https://taepoung.github.io/Web/Project.html</loc>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://taepoung.github.io/Web/Research_previous.html</loc>
-    <priority>0.6</priority>
   </url>
 
   <!-- Publications -->
   <url>
-    <loc>https://taepoung.github.io/Web/Publications_Conference.html</loc>
+    <loc>https://taepoung.github.io/Web/Publications.html</loc>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://taepoung.github.io/Web/Publications_Journal.html</loc>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://taepoung.github.io/Web/Publications_Former.html</loc>
-    <priority>0.6</priority>
   </url>
 
   <!-- News -->

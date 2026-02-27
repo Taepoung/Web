@@ -10,7 +10,7 @@
     <!-- Favicon -->
     <link rel="icon" href="asset/favicon.png" type="image/png">
     <!-- Brower tab Title -->
-    <title>Ongoing Research | BASE Lab</title>
+    <title>Projects | BASE Lab</title>
     <!-- CSS -->
     <link rel="stylesheet" href="utils/style.css">
     <link rel="stylesheet" href="utils/modal.css">
@@ -18,34 +18,38 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
 
     <!-- Open Graph / Link Preview -->
-    <meta property="og:title" content="Ongoing Research | BASE Lab">
-    <meta property="og:description" content="Ongoing Research Projects at BASE Lab. / BASE Lab의 진행 중인 연구 프로젝트.">
+    <meta property="og:title" content="Projects | BASE Lab">
+    <meta property="og:description" content="Projects at BASE Lab. / BASE Lab의 연구 프로젝트.">
     <meta property="og:image" content="asset/og-image.png">
+    <meta property="og:url" content="https://taepoung.github.io/Web/Project.html">
     <meta property="og:type" content="website">
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Ongoing Research Projects at BASE Lab. / BASE Lab의 진행 중인 연구 프로젝트.">
-    <meta name="keywords" content="Research, Ongoing Research, BASE Lab, 연구, 진행 중인 연구">
+    <meta name="description" content="Projects at BASE Lab. / BASE Lab의 연구 프로젝트.">
+    <meta name="keywords" content="Research, Projects, BASE Lab, 연구, 프로젝트">
     <meta name="author" content="BASE Lab">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body data-page-type="research-ongoing">
+<body data-page-type="project">
     <!-- [Header] -->
     <div id="header-placeholder"></div>
 
     <section class="section">
         <div class="container">
-            <h1 data-lang-kr="진행 중인 연구" data-lang-en="Ongoing Research">진행 중인 연구</h1>
+            <h1 data-lang-kr="연구 프로젝트" data-lang-en="Research Projects">연구 프로젝트</h1>
 
             <!-- Introduction Text -->
             <p style="color: var(--color-text-muted); margin-top: 1rem; margin-bottom: 3rem;"
-                data-lang-kr="현재 연구실에서 진행 중인 연구 프로젝트들을 소개합니다."
-                data-lang-en="Introducing the ongoing research projects at our lab.">
-                현재 연구실에서 진행 중인 연구 프로젝트들을 소개합니다.
+                data-lang-kr="연구실에서 수행 중이거나 완료된 프로젝트 목록입니다."
+                data-lang-en="List of ongoing and previous research projects conducted in our lab.">
+                연구실에서 수행 중이거나 완료된 프로젝트 목록입니다.
             </p>
+
+            <!-- Filter Buttons Container -->
+            <div id="project-filters" class="tabs" style="justify-content: center; margin-bottom: 2rem;"></div>
 
             <div id="news-list">
                 <!-- Data loaded from CSV via script.js -->
