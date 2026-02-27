@@ -21,6 +21,7 @@ The `publications.csv` file uses the following columns. Please ensure you mainta
 | **link** | 논문 링크 (PDF 또는 웹페이지) - 없을 시 `#` 입력 | Paper URL (or `#` if none) | `https://arxiv.org/...` |
 | **bibtex** | BibTeX 정보 (개행 문자는 `\n` 사용) | BibTeX entry (Use `\n` for new lines) | `@article{...}` |
 | **note** | 추가 비고 (특이사항 기재 시 사용) | Additional notes | `Best Paper Award` |
+| **thumbnail** | 썸네일 이미지 파일 경로. (비워두면 기본 이미지 적용, 4:3 비율 권장) | Thumbnail image path | `asset/pub1.png` |
 
 ---
 

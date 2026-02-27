@@ -39,13 +39,13 @@ The `members.csv` file uses the following columns. Please ensure you maintain th
 
 1.  **CSV Formatting (파일 형식)**:
     -   Use commas (`,`) to separate columns.
-    -   If a value contains a comma, wrap the entire value in double quotes (`"`).
+    -   If a value contains a comma or multi-line text (like paragraphs), wrap the entire value in double quotes (`"`).
     -   열 구분은 쉼표(`,`)를 사용합니다.
-    -   값 안에 쉼표가 포함된 경우 전체를 큰따옴표(`"`)로 감싸주세요.
+    -   값 안에 쉼표나 여러 줄 텍스트(엔터키 포함)가 포함된 경우 전체를 큰따옴표(`"`)로 감싸주세요.
 
 2.  **Line Breaks (줄바꿈 처리)**:
-    -   If you want to apply a line break in the `intro_kr` or `intro_en`, insert the newline character literally as `\n` in text. 
-    -   소개글(`intro`)에서 줄바꿈이 필요한 경우 줄을 바꾸고 싶은 위치에 `\n` 을 적어주시면 웹 화면에서 반영됩니다.
+    -   If you want to apply a line break in the `intro_kr` or `intro_en`, you can either insert `\n` OR simply wrap the text in double quotes (`"`) and use actual line breaks (Enter).
+    -   소개글(`intro`) 등에서 줄바꿈이 필요한 경우 줄을 바꾸고 싶은 위치에 `\n` 을 적어주시거나, 텍스트 전체를 큰따옴표(`"`)로 감싸고 실제 엔터키로 줄바꿈을 입력하셔도 웹 화면에서 정상적으로 반영됩니다.
 
 2.  **Images (이미지)**:
     -   Recommended size: Square (1:1), e.g., 400x400px.
