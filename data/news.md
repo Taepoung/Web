@@ -16,6 +16,7 @@
 | **sum_kr** | 한국어 요약 (카드에 표시됨) | `연구실이 비대면 체제로 전환되었습니다.` |
 | **sum_en** | 영어 요약 (카드에 표시됨) | `The lab has switched to remote operation mode.` |
 | **link** | 마크다운 파일 경로 | `data/news/sample.md` |
+| **thumbnail** | 썸네일 이미지 경로 (비워두면 기본 이미지 사용, 4:3 비율 권장) | `asset/news1.png` |
 
 ### 주요 사항
 - **type**: 현재 `Research`와 `Other` 두 가지 타입을 지원합니다.

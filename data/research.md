@@ -19,13 +19,14 @@ CSV 파일은 쉼표(`,`)로 구분되며, 다음 순서대로 데이터를 입�
 | **sum_kr** | 연구 요약 설명 (한국어) | `이 연구는...` | **필수** |
 | **sum_en** | 연구 요약 설명 (영어) | `This research...` | **필수** |
 | **link** | '자세히 보기' 버튼 클릭 시 이동할 경로입니다. <br> - **내부 파일:** `data/research/파일명.md` <br> - **외부 링크:** `https://...` <br> - **없음:** 빈칸으로 두면 버튼이 비활성화됩니다. | `data/research/sample.md` | 선택 |
+| **thumbnail** | 썸네일 이미지 파일 경로. <br> (비워두면 기본 이미지 적용, 4:3 비율 권장) | `asset/research1.png` | 선택 |
 
 ## 작성 예시
 ```csv
-status,date,title_kr,title_en,sum_kr,sum_en,link
-Ongoing,2024.01.01,"LLM 연구","LLM Research","설명입니다.","Description here.",data/research/sample_ongoing.md
-Previous,2023.12.31,"보안 분석","Security Analysis","완료된 연구입니다.","Finished research.",
-Previous,2023.01.01,"외부 링크","External Link","구글로 연결됩니다.","Links to Google.","https://google.com"
+status,date,title_kr,title_en,sum_kr,sum_en,link,thumbnail
+Ongoing,2024.01.01,"LLM 연구","LLM Research","설명입니다.","Description here.",data/research/sample_ongoing.md,
+Previous,2023.12.31,"보안 분석","Security Analysis","완료된 연구입니다.","Finished research.",,
+Previous,2023.01.01,"외부 링크","External Link","구글로 연결됩니다.","Links to Google.","https://google.com",
 ```
 
 ## 주의사항

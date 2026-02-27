@@ -1,4 +1,4 @@
-type,date,title_kr,title_en,sum_kr,sum_en,link
-Other,2024.03.01,비대면 연구실 운영 시작,Remote Lab Operation Started,연구실이 비대면 체제로 전환되었습니다.,The lab has switched to remote operation mode.,data/news/sample.md
-Research,2024.01.15,2024년도 신입생 모집,2024 Student Recruitment,2024년도 대학원 신입생을 모집합니다.,Recruiting new graduate students for 2024.,https://google.com
+type,date,title_kr,title_en,sum_kr,sum_en,link,thumbnail
+Other,2024.03.01,비대면 연구실 운영 시작,Remote Lab Operation Started,연구실이 비대면 체제로 전환되었습니다.,The lab has switched to remote operation mode.,data/news/sample.md,
+Research,2024.01.15,2024년도 신입생 모집,2024 Student Recruitment,2024년도 대학원 신입생을 모집합니다.,Recruiting new graduate students for 2024.,https://google.com,
 Other,2023.12.20,연구실 송년회,Lab Year-End Party,2023년 연구실 송년회를 가졌습니다.,Held 2023 Lab Year-End Party.,

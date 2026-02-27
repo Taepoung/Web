@@ -14,7 +14,7 @@ const RECENT_THRESHOLD_YEAR = 2020;
 const LATEST_NEWS_COUNT = 20;
 
 // Pagination Configuration
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 7;
 let currentNewsRows = []; // Store news items for pagination
 let currentResearchRows = []; // Store research items for pagination
 
@@ -538,17 +538,25 @@ function renderNewsPage(rows, container, isKr, useWrapper = true) {
             clickAction = `onclick="openNewsModal('${link}')"`;
         }
 
+        const defaultThumb = 'asset/default-thumb.png';
+        const thumbSrc = item.thumbnail && item.thumbnail.trim() !== '' ? item.thumbnail : defaultThumb;
+
         html += `
         <div class="publication-card">
-            <div class="pub-content">
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${title}</h3>
-                <p style=" margin-bottom: 0.5rem; font-size: 0.95rem;">
-                    ${summary}
-                </p>
-                <p style="color: var(--color-text-muted); font-weight: 500; font-size: 0.9rem;">
-                    ${item.date}
-                </p>
-                <a href="#" ${clickAction} class="cv-btn${additionalClass}" style="margin-top: 1rem; font-size: 0.85rem; padding: 0.3rem 1rem;">${btnText}</a>
+            <div class="pub-card-layout">
+                <div class="pub-img-wrapper">
+                    <img src="${thumbSrc}" onerror="this.onerror=null; this.src='${defaultThumb}';" alt="Thumbnail">
+                </div>
+                <div class="pub-content">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${title}</h3>
+                    <p style=" margin-bottom: 0.5rem; font-size: 0.95rem;">
+                        ${summary}
+                    </p>
+                    <p style="color: var(--color-text-muted); font-weight: 500; font-size: 0.9rem;">
+                        ${item.date}
+                    </p>
+                    <a href="#" ${clickAction} class="cv-btn${additionalClass}" style="margin-top: 1rem; font-size: 0.85rem; padding: 0.3rem 1rem;">${btnText}</a>
+                </div>
             </div>
         </div>
         `;
